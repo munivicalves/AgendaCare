@@ -1,0 +1,50 @@
+<aside class="flex h-screen w-64 flex-col border-r border-slate-200 bg-white px-4 py-6">
+  <!-- Logo -->
+  <div class="mb-10 flex items-center gap-3 px-2">
+    <div
+      class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-lg font-bold text-white"
+    >
+      A
+    </div>
+
+    <div>
+      <h1 class="text-xl font-bold text-slate-800">AgendaCare</h1>
+      <p class="text-xs text-slate-400">Gestão de atendimentos</p>
+    </div>
+  </div>
+
+  <!-- Navegação -->
+  <nav class="flex flex-1 flex-col gap-2">
+    <a
+      routerLink="/"
+      routerLinkActive="bg-blue-50 text-blue-600"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="flex items-center gap-3 rounded-xl px-4 py-3 font-medium text-slate-600 transition hover:bg-slate-100"
+    >
+      <span>▦</span>
+      Dashboard
+    </a>
+
+    <a
+      routerLink="/agenda"
+      routerLinkActive="bg-blue-50 text-blue-600"
+      class="flex items-center gap-3 rounded-xl px-4 py-3 font-medium text-slate-600 transition hover:bg-slate-100"
+    >
+      <span>▣</span>
+      Agenda
+    </a>
+
+    <a
+      routerLink="/pacientes"
+      routerLinkActive="bg-blue-50 text-blue-600"
+      class="flex items-center gap-3 rounded-xl px-4 py-3 font-medium text-slate-600 transition hover:bg-slate-100"
+    >
+      <span>♙</span>
+      Pacientes
+    </a>
+  </nav>
+
+  <div class="border-t border-slate-200 pt-4">
+    <p class="px-4 text-xs text-slate-400">AgendaCare</p>
+  </div>
+</aside>
