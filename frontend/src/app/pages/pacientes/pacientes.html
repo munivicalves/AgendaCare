@@ -1,1 +1,55 @@
-<p>pacientes works!</p>
+<div class="space-y-6">
+  <div>
+    <h1 class="text-3xl font-bold text-slate-800">Pacientes</h1>
+
+    <p class="mt-1 text-slate-500">Gerencie seus pacientes cadastrados.</p>
+  </div>
+
+  @if (carregando()) {
+    <div class="rounded-2xl border border-slate-200 bg-white p-6">
+      <p class="text-slate-500">Carregando pacientes...</p>
+    </div>
+  }
+
+  @if (erro()) {
+    <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-red-600">
+      {{ erro() }}
+    </div>
+  }
+
+  @if (!carregando() && !erro()) {
+    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div class="border-b border-slate-100 px-6 py-5">
+        <h2 class="font-semibold text-slate-800">Pacientes cadastrados</h2>
+
+        <p class="text-sm text-slate-400">{{ pacientes().length }} paciente(s)</p>
+      </div>
+
+      @for (paciente of pacientes(); track paciente.id) {
+        <div
+          class="flex items-center justify-between border-b border-slate-100 px-6 py-4 last:border-b-0"
+        >
+          <div>
+            <p class="font-semibold text-slate-700">
+              {{ paciente.nome }}
+            </p>
+
+            <p class="text-sm text-slate-400">
+              {{ paciente.email || 'E-mail não informado' }}
+            </p>
+          </div>
+
+          <div class="text-right">
+            <p class="text-sm text-slate-600">
+              {{ paciente.telefone || 'Telefone não informado' }}
+            </p>
+          </div>
+        </div>
+      } @empty {
+        <div class="p-8 text-center">
+          <p class="text-slate-400">Nenhum paciente cadastrado.</p>
+        </div>
+      }
+    </div>
+  }
+</div>
