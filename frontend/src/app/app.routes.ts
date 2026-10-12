@@ -4,6 +4,7 @@ import { Dashboard } from './pages/dashboard/dashboard';
 import { Agenda } from './pages/agenda/agenda';
 import { Pacientes } from './pages/pacientes/pacientes';
 import { PacienteForm } from './pages/paciente-form/paciente-form';
+import { AgendamentoForm } from './pages/agendamento-form/agendamento-form';
 
 export const routes: Routes = [
   {
@@ -30,6 +31,10 @@ export const routes: Routes = [
     path: 'pacientes/:id/editar',
     component: PacienteForm,
     title: 'Editar Paciente | AgendaCare',
+  },
+  {
+    path: 'agenda/novo',
+    component: AgendamentoForm,
   },
 
   // Sempre por último

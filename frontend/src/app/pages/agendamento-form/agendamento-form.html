@@ -1,0 +1,185 @@
+<div class="mx-auto max-w-4xl space-y-6">
+  <!-- Cabeçalho -->
+  <div>
+    <a
+      routerLink="/agenda"
+      class="mb-4 inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700"
+    >
+      ← Voltar para agenda
+    </a>
+
+    <h1 class="text-3xl font-bold text-slate-800">Nova consulta</h1>
+
+    <p class="mt-1 text-slate-500">Preencha os dados para agendar um atendimento.</p>
+  </div>
+
+  @if (erro()) {
+    <div role="alert" class="rounded-xl border border-red-200 bg-red-50 p-4 text-red-600">
+      {{ erro() }}
+    </div>
+  }
+
+  <form
+    [formGroup]="form"
+    (ngSubmit)="salvar()"
+    class="space-y-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8"
+  >
+    <!-- Paciente -->
+    <div>
+      <label for="pacienteId" class="mb-2 block text-sm font-medium text-slate-700">
+        Paciente *
+      </label>
+
+      <select
+        id="pacienteId"
+        formControlName="pacienteId"
+        class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+      >
+        <option [ngValue]="0">Selecione um paciente</option>
+
+        @for (paciente of pacientes(); track paciente.id) {
+          <option [ngValue]="paciente.id">
+            {{ paciente.nome }}
+          </option>
+        }
+      </select>
+
+      @if (form.controls.pacienteId.touched && form.controls.pacienteId.invalid) {
+        <p class="mt-1 text-sm text-red-500">Selecione um paciente.</p>
+      }
+
+      @if (carregandoPacientes()) {
+        <p class="mt-2 text-sm text-slate-400">Carregando pacientes...</p>
+      } @else if (pacientes().length === 0) {
+        <p class="mt-2 text-sm text-slate-500">
+          Nenhum paciente disponível.
+          <a routerLink="/pacientes/novo" class="font-medium text-blue-600 hover:underline">
+            Cadastrar paciente
+          </a>
+        </p>
+      }
+    </div>
+
+    <!-- Data -->
+    <div>
+      <label for="data" class="mb-2 block text-sm font-medium text-slate-700">
+        Data da consulta *
+      </label>
+
+      <input
+        id="data"
+        type="date"
+        formControlName="data"
+        class="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+      />
+
+      @if (form.controls.data.touched && form.controls.data.invalid) {
+        <p class="mt-1 text-sm text-red-500">Informe a data da consulta.</p>
+      }
+    </div>
+
+    <!-- Horários -->
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+      <div>
+        <label for="horaInicio" class="mb-2 block text-sm font-medium text-slate-700">
+          Horário inicial *
+        </label>
+
+        <input
+          id="horaInicio"
+          type="time"
+          formControlName="horaInicio"
+          class="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+        />
+
+        @if (form.controls.horaInicio.touched && form.controls.horaInicio.invalid) {
+          <p class="mt-1 text-sm text-red-500">Informe o horário inicial.</p>
+        }
+      </div>
+
+      <div>
+        <label for="horaFim" class="mb-2 block text-sm font-medium text-slate-700">
+          Horário final *
+        </label>
+
+        <input
+          id="horaFim"
+          type="time"
+          formControlName="horaFim"
+          class="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+        />
+
+        @if (form.controls.horaFim.touched && form.controls.horaFim.invalid) {
+          <p class="mt-1 text-sm text-red-500">Informe o horário final.</p>
+        }
+      </div>
+    </div>
+
+    @if (
+      form.hasError('horarioInvalido') &&
+      (form.controls.horaInicio.touched || form.controls.horaFim.touched)
+    ) {
+      <p class="text-sm text-red-500">O horário final deve ser posterior ao horário inicial.</p>
+    }
+
+    <!-- Tipo -->
+    <div>
+      <label for="tipo" class="mb-2 block text-sm font-medium text-slate-700">
+        Tipo de atendimento *
+      </label>
+
+      <input
+        id="tipo"
+        type="text"
+        formControlName="tipo"
+        placeholder="Ex.: Consulta inicial, retorno, avaliação..."
+        class="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+      />
+
+      @if (form.controls.tipo.touched && form.controls.tipo.invalid) {
+        <p class="mt-1 text-sm text-red-500">
+          Informe o tipo de atendimento com pelo menos 3 caracteres.
+        </p>
+      }
+    </div>
+
+    <!-- Observações -->
+    <div>
+      <label for="observacoes" class="mb-2 block text-sm font-medium text-slate-700">
+        Observações
+      </label>
+
+      <textarea
+        id="observacoes"
+        formControlName="observacoes"
+        rows="4"
+        placeholder="Informações adicionais sobre a consulta..."
+        class="w-full resize-none rounded-xl border border-slate-200 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+      ></textarea>
+    </div>
+
+    <!-- Ações -->
+    <div
+      class="flex flex-col-reverse gap-3 border-t border-slate-100 pt-6 sm:flex-row sm:justify-end"
+    >
+      <a
+        routerLink="/agenda"
+        class="rounded-xl border border-slate-200 px-6 py-3 text-center font-medium text-slate-600 transition hover:bg-slate-50"
+      >
+        Cancelar
+      </a>
+
+      <button
+        type="submit"
+        [disabled]="salvando() || carregandoPacientes()"
+        class="rounded-xl bg-blue-600 px-6 py-3 font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        @if (salvando()) {
+          Salvando...
+        } @else {
+          Salvar consulta
+        }
+      </button>
+    </div>
+  </form>
+</div>
