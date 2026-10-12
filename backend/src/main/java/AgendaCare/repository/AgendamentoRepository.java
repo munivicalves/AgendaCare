@@ -29,4 +29,6 @@ public interface AgendamentoRepository
                         LocalTime horaInicio,
                         Long id,
                         StatusAgendamento status);
+
+        boolean existsByPacienteId(Long pacienteId);
 }

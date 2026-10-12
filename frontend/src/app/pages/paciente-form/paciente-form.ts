@@ -1,8 +1,33 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { PacienteService } from '../../core/services/paciente';
+
+function validarDataNascimento(control: AbstractControl): ValidationErrors | null {
+  const valor = control.value as string;
+
+  // Campo vazio continua permitido
+  if (!valor) {
+    return null;
+  }
+
+  // Compara datas no formato YYYY-MM-DD
+  const hoje = new Date();
+  const ano = hoje.getFullYear();
+  const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+  const dia = String(hoje.getDate()).padStart(2, '0');
+
+  const dataAtual = `${ano}-${mes}-${dia}`;
+
+  return valor > dataAtual ? { dataFutura: true } : null;
+}
 
 @Component({
   selector: 'app-paciente-form',

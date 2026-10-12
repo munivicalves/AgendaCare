@@ -15,8 +15,13 @@ export class Pacientes implements OnInit {
   pacientes = signal<Paciente[]>([]);
   carregando = signal(true);
   erro = signal('');
+  sucesso = signal('');
 
   termoBusca = '';
+
+  // Controle do modal de exclusão
+  pacienteParaExcluir = signal<Paciente | null>(null);
+  excluindo = signal(false);
 
   constructor(private pacienteService: PacienteService) {}
 
@@ -36,9 +41,7 @@ export class Pacientes implements OnInit {
 
       error: (erro) => {
         console.error('Erro ao carregar pacientes:', erro);
-
         this.erro.set('Não foi possível carregar os pacientes.');
-
         this.carregando.set(false);
       },
     });
@@ -63,9 +66,7 @@ export class Pacientes implements OnInit {
 
       error: (erro) => {
         console.error('Erro ao buscar pacientes:', erro);
-
         this.erro.set('Não foi possível realizar a busca.');
-
         this.carregando.set(false);
       },
     });
@@ -74,5 +75,59 @@ export class Pacientes implements OnInit {
   limparBusca(): void {
     this.termoBusca = '';
     this.carregarPacientes();
+  }
+
+  // Abre o modal
+  confirmarExclusao(paciente: Paciente): void {
+    this.erro.set('');
+    this.sucesso.set('');
+    this.pacienteParaExcluir.set(paciente);
+  }
+
+  // Fecha o modal
+  cancelarExclusao(): void {
+    if (this.excluindo()) {
+      return;
+    }
+
+    this.pacienteParaExcluir.set(null);
+  }
+
+  // Exclui o paciente no backend
+  excluirPaciente(): void {
+    const paciente = this.pacienteParaExcluir();
+
+    if (!paciente || this.excluindo()) {
+      return;
+    }
+
+    this.excluindo.set(true);
+    this.erro.set('');
+    this.sucesso.set('');
+
+    this.pacienteService.excluir(paciente.id).subscribe({
+      next: () => {
+        // Atualiza a tabela sem recarregar a página
+        this.pacientes.update((pacientes) => pacientes.filter((p) => p.id !== paciente.id));
+
+        this.pacienteParaExcluir.set(null);
+        this.excluindo.set(false);
+
+        this.sucesso.set(`Paciente ${paciente.nome} excluído com sucesso.`);
+      },
+
+      error: (erro) => {
+        console.error('Erro ao excluir paciente:', erro);
+
+        if (erro.status === 409) {
+          this.erro.set('Este paciente possui agendamentos vinculados e não pode ser excluído.');
+        } else {
+          this.erro.set('Não foi possível excluir o paciente. Tente novamente.');
+        }
+
+        this.pacienteParaExcluir.set(null);
+        this.excluindo.set(false);
+      },
+    });
   }
 }

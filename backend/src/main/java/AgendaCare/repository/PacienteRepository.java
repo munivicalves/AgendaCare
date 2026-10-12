@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface PacienteRepository extends JpaRepository<Paciente, Long> {
 
-    List<Paciente> findByNomeContainingIgnoreCaseOrderByNomeAsc(String nome);
+    List<Paciente> findByNomeContainingIgnoreCaseOrderByNomeAsc(
+            String nome);
 }

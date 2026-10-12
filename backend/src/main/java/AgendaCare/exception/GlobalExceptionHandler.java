@@ -12,54 +12,67 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ConflitoAgendamentoException.class)
-    public ResponseEntity<Map<String, Object>> tratarConflito(
-            ConflitoAgendamentoException exception
-    ) {
+        @ExceptionHandler(ConflitoAgendamentoException.class)
+        public ResponseEntity<Map<String, Object>> tratarConflito(
+                        ConflitoAgendamentoException exception) {
 
-        Map<String, Object> erro = new LinkedHashMap<>();
+                Map<String, Object> erro = new LinkedHashMap<>();
 
-        erro.put("timestamp", LocalDateTime.now());
-        erro.put("status", HttpStatus.CONFLICT.value());
-        erro.put("erro", "Conflito de horário");
-        erro.put("mensagem", exception.getMessage());
+                erro.put("timestamp", LocalDateTime.now());
+                erro.put("status", HttpStatus.CONFLICT.value());
+                erro.put("erro", "Conflito de horário");
+                erro.put("mensagem", exception.getMessage());
 
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(erro);
-    }
+                return ResponseEntity
+                                .status(HttpStatus.CONFLICT)
+                                .body(erro);
+        }
 
-    @ExceptionHandler(RecursoNaoEncontradoException.class)
-    public ResponseEntity<Map<String, Object>> tratarNaoEncontrado(
-            RecursoNaoEncontradoException exception
-    ) {
+        @ExceptionHandler(RecursoNaoEncontradoException.class)
+        public ResponseEntity<Map<String, Object>> tratarNaoEncontrado(
+                        RecursoNaoEncontradoException exception) {
 
-        Map<String, Object> erro = new LinkedHashMap<>();
+                Map<String, Object> erro = new LinkedHashMap<>();
 
-        erro.put("timestamp", LocalDateTime.now());
-        erro.put("status", HttpStatus.NOT_FOUND.value());
-        erro.put("erro", "Recurso não encontrado");
-        erro.put("mensagem", exception.getMessage());
+                erro.put("timestamp", LocalDateTime.now());
+                erro.put("status", HttpStatus.NOT_FOUND.value());
+                erro.put("erro", "Recurso não encontrado");
+                erro.put("mensagem", exception.getMessage());
 
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(erro);
-    }
+                return ResponseEntity
+                                .status(HttpStatus.NOT_FOUND)
+                                .body(erro);
+        }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Map<String, Object>> tratarArgumentoInvalido(
-            IllegalArgumentException exception
-    ) {
+        @ExceptionHandler(IllegalArgumentException.class)
+        public ResponseEntity<Map<String, Object>> tratarArgumentoInvalido(
+                        IllegalArgumentException exception) {
 
-        Map<String, Object> erro = new LinkedHashMap<>();
+                Map<String, Object> erro = new LinkedHashMap<>();
 
-        erro.put("timestamp", LocalDateTime.now());
-        erro.put("status", HttpStatus.BAD_REQUEST.value());
-        erro.put("erro", "Dados inválidos");
-        erro.put("mensagem", exception.getMessage());
+                erro.put("timestamp", LocalDateTime.now());
+                erro.put("status", HttpStatus.BAD_REQUEST.value());
+                erro.put("erro", "Dados inválidos");
+                erro.put("mensagem", exception.getMessage());
 
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(erro);
-    }
+                return ResponseEntity
+                                .status(HttpStatus.BAD_REQUEST)
+                                .body(erro);
+        }
+
+        @ExceptionHandler(PacienteComAgendamentosException.class)
+        public ResponseEntity<Map<String, Object>> tratarPacienteComAgendamentos(
+                        PacienteComAgendamentosException exception) {
+
+                Map<String, Object> erro = new LinkedHashMap<>();
+
+                erro.put("timestamp", LocalDateTime.now());
+                erro.put("status", HttpStatus.CONFLICT.value());
+                erro.put("erro", "Paciente com agendamentos");
+                erro.put("mensagem", exception.getMessage());
+
+                return ResponseEntity
+                                .status(HttpStatus.CONFLICT)
+                                .body(erro);
+        }
 }
