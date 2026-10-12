@@ -1,0 +1,165 @@
+<div class="mx-auto max-w-4xl space-y-6">
+  <!-- Cabeçalho -->
+  <div>
+    <button
+      type="button"
+      routerLink="/pacientes"
+      class="mb-4 text-sm font-medium text-slate-500 transition hover:text-blue-600"
+    >
+      ← Voltar para pacientes
+    </button>
+
+    <h1 class="text-3xl font-bold text-slate-800">
+      @if (modoEdicao()) {
+        Editar paciente
+      } @else {
+        Novo paciente
+      }
+    </h1>
+
+    <p class="mt-1 text-slate-500">
+      @if (modoEdicao()) {
+        Atualize os dados do paciente.
+      } @else {
+        Preencha os dados para cadastrar um novo paciente.
+      }
+    </p>
+  </div>
+
+  <!-- Erro da API -->
+  @if (erro()) {
+    <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-red-600">
+      {{ erro() }}
+    </div>
+  }
+
+  <!-- Formulário -->
+  <form
+    [formGroup]="form"
+    (ngSubmit)="salvar()"
+    class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+  >
+    <div class="grid gap-6 md:grid-cols-2">
+      <!-- Nome -->
+      <div class="md:col-span-2">
+        <label for="nome" class="mb-2 block text-sm font-medium text-slate-700">
+          Nome completo *
+        </label>
+
+        <input
+          id="nome"
+          type="text"
+          formControlName="nome"
+          autocomplete="name"
+          placeholder="Digite o nome do paciente"
+          class="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+        />
+
+        @if (form.controls.nome.touched && form.controls.nome.hasError('required')) {
+          <p class="mt-1 text-sm text-red-500">O nome é obrigatório.</p>
+        }
+
+        @if (form.controls.nome.touched && form.controls.nome.hasError('minlength')) {
+          <p class="mt-1 text-sm text-red-500">O nome deve possuir pelo menos 3 caracteres.</p>
+        }
+      </div>
+
+      <!-- E-mail -->
+      <div>
+        <label for="email" class="mb-2 block text-sm font-medium text-slate-700"> E-mail </label>
+
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+          placeholder="nome@exemplo.com"
+          class="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+        />
+
+        @if (form.controls.email.touched && form.controls.email.hasError('email')) {
+          <p class="mt-1 text-sm text-red-500">Informe um e-mail válido. Ex.: nome@exemplo.com</p>
+        }
+      </div>
+
+      <!-- Telefone -->
+      <div>
+        <label for="telefone" class="mb-2 block text-sm font-medium text-slate-700">
+          Telefone
+        </label>
+
+        <input
+          id="telefone"
+          type="tel"
+          formControlName="telefone"
+          (input)="formatarTelefone($event)"
+          maxlength="15"
+          inputmode="numeric"
+          autocomplete="tel"
+          placeholder="(34) 99999-9999"
+          class="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+        />
+
+        @if (form.controls.telefone.touched && form.controls.telefone.hasError('pattern')) {
+          <p class="mt-1 text-sm text-red-500">Informe um telefone válido. Ex.: (34) 99999-9999</p>
+        }
+      </div>
+
+      <!-- Data de nascimento -->
+      <div>
+        <label for="dataNascimento" class="mb-2 block text-sm font-medium text-slate-700">
+          Data de nascimento
+        </label>
+
+        <input
+          id="dataNascimento"
+          type="date"
+          formControlName="dataNascimento"
+          class="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+        />
+      </div>
+
+      <!-- Observações -->
+      <div class="md:col-span-2">
+        <label for="observacoes" class="mb-2 block text-sm font-medium text-slate-700">
+          Observações
+        </label>
+
+        <textarea
+          id="observacoes"
+          formControlName="observacoes"
+          rows="4"
+          maxlength="1000"
+          placeholder="Informações adicionais sobre o paciente..."
+          class="w-full resize-none rounded-xl border border-slate-200 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+        ></textarea>
+      </div>
+    </div>
+
+    <!-- Botões -->
+    <div class="mt-8 flex justify-end gap-3 border-t border-slate-100 pt-6">
+      <button
+        type="button"
+        routerLink="/pacientes"
+        [disabled]="salvando()"
+        class="rounded-xl border border-slate-200 px-5 py-3 font-medium text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        Cancelar
+      </button>
+
+      <button
+        type="submit"
+        [disabled]="salvando()"
+        class="rounded-xl bg-blue-600 px-6 py-3 font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        @if (salvando()) {
+          Salvando...
+        } @else if (modoEdicao()) {
+          Salvar alterações
+        } @else {
+          Salvar paciente
+        }
+      </button>
+    </div>
+  </form>
+</div>
