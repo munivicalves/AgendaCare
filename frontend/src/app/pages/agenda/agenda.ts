@@ -4,10 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { AgendamentoService } from '../../core/services/agendamento';
 import { Agendamento, StatusAgendamento } from '../../models/agendamento';
 import { RouterLink } from '@angular/router';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-agenda',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, DatePipe],
   templateUrl: './agenda.html',
   styleUrl: './agenda.css',
 })
@@ -15,6 +16,9 @@ export class Agenda implements OnInit {
   agendamentos = signal<Agendamento[]>([]);
   carregando = signal(false);
   erro = signal('');
+  agendamentoParaCancelar = signal<Agendamento | null>(null);
+  cancelando = signal(false);
+  sucesso = signal('');
 
   dataSelecionada = this.obterDataAtual();
 
@@ -109,5 +113,51 @@ export class Agenda implements OnInit {
       default:
         return 'Agendado';
     }
+  }
+
+  confirmarCancelamento(agendamento: Agendamento): void {
+    this.erro.set('');
+    this.sucesso.set('');
+    this.agendamentoParaCancelar.set(agendamento);
+  }
+
+  fecharModalCancelamento(): void {
+    if (this.cancelando()) return;
+
+    this.agendamentoParaCancelar.set(null);
+  }
+
+  cancelarAgendamento(): void {
+    const agendamento = this.agendamentoParaCancelar();
+
+    if (!agendamento || this.cancelando()) return;
+
+    this.cancelando.set(true);
+    this.erro.set('');
+    this.sucesso.set('');
+
+    this.agendamentoService.cancelar(agendamento.id).subscribe({
+      next: (atualizado) => {
+        this.agendamentos.update((agendamentos) =>
+          agendamentos.map((item) => (item.id === atualizado.id ? atualizado : item)),
+        );
+
+        this.agendamentoParaCancelar.set(null);
+        this.cancelando.set(false);
+
+        this.sucesso.set(`Consulta de ${agendamento.pacienteNome} cancelada com sucesso.`);
+      },
+
+      error: (erro) => {
+        console.error('Erro ao cancelar agendamento:', erro);
+
+        this.erro.set(
+          erro.error?.mensagem || 'Não foi possível cancelar a consulta. Tente novamente.',
+        );
+
+        this.agendamentoParaCancelar.set(null);
+        this.cancelando.set(false);
+      },
+    });
   }
 }

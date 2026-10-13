@@ -7,16 +7,27 @@
     >
       ← Voltar para agenda
     </a>
+    <h1 class="text-3xl font-bold text-slate-800">
+      {{ modoEdicao() ? 'Editar consulta' : 'Nova consulta' }}
+    </h1>
 
-    <h1 class="text-3xl font-bold text-slate-800">Nova consulta</h1>
-
-    <p class="mt-1 text-slate-500">Preencha os dados para agendar um atendimento.</p>
+    <p class="mt-1 text-slate-500">
+      {{
+        modoEdicao()
+          ? 'Atualize os dados do agendamento.'
+          : 'Preencha os dados para agendar um atendimento.'
+      }}
+    </p>
   </div>
 
   @if (erro()) {
     <div role="alert" class="rounded-xl border border-red-200 bg-red-50 p-4 text-red-600">
       {{ erro() }}
     </div>
+  }
+
+  @if (carregandoAgendamento()) {
+    <div class="rounded-xl bg-blue-50 p-4 text-blue-600">Carregando dados da consulta...</div>
   }
 
   <form
@@ -171,13 +182,13 @@
 
       <button
         type="submit"
-        [disabled]="salvando() || carregandoPacientes()"
+        [disabled]="salvando() || carregandoPacientes() || carregandoAgendamento()"
         class="rounded-xl bg-blue-600 px-6 py-3 font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
       >
         @if (salvando()) {
           Salvando...
         } @else {
-          Salvar consulta
+          {{ modoEdicao() ? 'Salvar alterações' : 'Salvar consulta' }}
         }
       </button>
     </div>

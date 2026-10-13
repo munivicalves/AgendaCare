@@ -37,6 +37,11 @@ export const routes: Routes = [
     component: AgendamentoForm,
   },
 
+  {
+    path: 'agenda/:id/editar',
+    component: AgendamentoForm,
+  },
+
   // Sempre por último
   {
     path: '**',
