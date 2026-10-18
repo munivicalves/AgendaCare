@@ -38,7 +38,7 @@
         <input
           type="date"
           [(ngModel)]="dataSelecionada"
-          (ngModelChange)="carregarAgendamentos()"
+          (ngModelChange)="aoSelecionarData()"
           class="rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-blue-500"
         />
 
@@ -61,6 +61,229 @@
       </div>
     </div>
   </div>
+
+  <!-- Seleção da visualização -->
+  <div class="flex items-center justify-between gap-4">
+    <h2 class="font-semibold text-slate-800">Visualização da agenda</h2>
+
+    <div class="flex rounded-xl border border-slate-200 bg-white p-1 shadow-sm">
+      <button
+        type="button"
+        (click)="visualizacao.set('mensal')"
+        [class.bg-blue-600]="visualizacao() === 'mensal'"
+        [class.text-white]="visualizacao() === 'mensal'"
+        class="rounded-lg px-4 py-2 text-sm font-medium transition"
+      >
+        Mensal
+      </button>
+
+      <button
+        type="button"
+        (click)="visualizacao.set('semanal')"
+        [class.bg-blue-600]="visualizacao() === 'semanal'"
+        [class.text-white]="visualizacao() === 'semanal'"
+        class="rounded-lg px-4 py-2 text-sm font-medium transition"
+      >
+        Semanal
+      </button>
+    </div>
+  </div>
+
+  <!-- Calendário mensal -->
+  @if (visualizacao() === 'mensal') {
+    <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <!-- Cabeçalho do calendário -->
+      <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h2 class="text-lg font-semibold text-slate-800">Calendário mensal</h2>
+
+          <p class="mt-1 text-sm capitalize text-slate-500">
+            {{ obterNomeMes() }}
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            (click)="alterarMes(-1)"
+            aria-label="Mês anterior"
+            class="rounded-xl border border-slate-200 px-4 py-2 text-slate-600 transition hover:bg-slate-50"
+          >
+            ←
+          </button>
+
+          <button
+            type="button"
+            (click)="alterarMes(1)"
+            aria-label="Próximo mês"
+            class="rounded-xl border border-slate-200 px-4 py-2 text-slate-600 transition hover:bg-slate-50"
+          >
+            →
+          </button>
+        </div>
+      </div>
+
+      @if (erroCalendario()) {
+        <p class="mb-4 text-sm text-red-600">
+          {{ erroCalendario() }}
+        </p>
+      }
+
+      <!-- Dias da semana -->
+      <div class="mb-2 grid grid-cols-7 gap-2">
+        @for (diaSemana of diasSemana; track $index) {
+          <div class="py-2 text-center text-xs font-semibold text-slate-500">
+            {{ diaSemana }}
+          </div>
+        }
+      </div>
+
+      <!-- Dias do mês -->
+      <div class="grid grid-cols-7 gap-2">
+        @for (dia of diasCalendario(); track $index) {
+          @if (dia !== null) {
+            <button
+              type="button"
+              (click)="selecionarDia(dia)"
+              [class.bg-blue-600]="dataSelecionada === formatarDataCalendario(dia)"
+              [class.text-white]="dataSelecionada === formatarDataCalendario(dia)"
+              [class.bg-slate-50]="dataSelecionada !== formatarDataCalendario(dia)"
+              class="flex min-h-16 flex-col items-center justify-center gap-1 rounded-xl border border-slate-100 p-2 transition hover:border-blue-300 hover:bg-blue-50"
+            >
+              <span class="text-sm font-semibold">
+                {{ dia }}
+              </span>
+
+              @if (quantidadeConsultasDia(dia) > 0) {
+                <span
+                  class="rounded-full px-2 py-0.5 text-xs font-medium"
+                  [class.bg-white]="dataSelecionada === formatarDataCalendario(dia)"
+                  [class.text-blue-700]="dataSelecionada === formatarDataCalendario(dia)"
+                  [class.bg-blue-100]="dataSelecionada !== formatarDataCalendario(dia)"
+                  [class.text-blue-600]="dataSelecionada !== formatarDataCalendario(dia)"
+                >
+                  {{ quantidadeConsultasDia(dia) }}
+                </span>
+              }
+            </button>
+          } @else {
+            <div aria-hidden="true" class="min-h-16"></div>
+          }
+        }
+      </div>
+
+      @if (carregandoCalendario()) {
+        <p class="mt-4 text-center text-sm text-slate-400">Carregando calendário...</p>
+      }
+
+      <p class="mt-5 text-xs text-slate-400">
+        Os números indicam a quantidade de consultas cadastradas em cada dia, incluindo consultas
+        canceladas.
+      </p>
+    </section>
+  }
+
+  @if (visualizacao() === 'semanal') {
+    <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <!-- Cabeçalho -->
+      <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h2 class="text-lg font-semibold text-slate-800">Calendário semanal</h2>
+
+          <p class="mt-1 text-sm text-slate-500">Visualize os atendimentos da semana.</p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            (click)="alterarSemana(-1)"
+            aria-label="Semana anterior"
+            class="rounded-xl border border-slate-200 px-4 py-2 text-slate-600 hover:bg-slate-50"
+          >
+            ←
+          </button>
+
+          <button
+            type="button"
+            (click)="alterarSemana(1)"
+            aria-label="Próxima semana"
+            class="rounded-xl border border-slate-200 px-4 py-2 text-slate-600 hover:bg-slate-50"
+          >
+            →
+          </button>
+        </div>
+      </div>
+
+      <!-- Grade semanal -->
+      <div class="overflow-x-auto">
+        <div class="grid min-w-[770px] grid-cols-7 gap-3">
+          @for (dia of diasSemanaCalendario(); track dia.data) {
+            <div class="min-w-0">
+              <!-- Dia da semana -->
+              <button
+                type="button"
+                (click)="selecionarDiaSemana(dia.data)"
+                [class.bg-blue-600]="dataSelecionada === dia.data"
+                [class.text-white]="dataSelecionada === dia.data"
+                [class.bg-slate-100]="dataSelecionada !== dia.data"
+                class="mb-3 flex w-full flex-col items-center rounded-xl p-3 transition hover:ring-2 hover:ring-blue-200"
+              >
+                <span class="text-xs capitalize">
+                  {{ dia.nome }}
+                </span>
+
+                <span class="text-xl font-bold">
+                  {{ dia.numero }}
+                </span>
+              </button>
+
+              <!-- Consultas do dia -->
+              <div class="space-y-2">
+                @for (consulta of consultasDoDia(dia.data); track consulta.id) {
+                  <div class="rounded-xl border border-blue-100 bg-blue-50 p-3">
+                    <p class="text-xs font-bold text-blue-700">
+                      {{ consulta.horaInicio.slice(0, 5) }}
+                    </p>
+
+                    <p class="mt-1 break-words text-xs font-semibold text-slate-700">
+                      {{ consulta.pacienteNome }}
+                    </p>
+
+                    <p class="mt-1 break-words text-xs text-slate-500">
+                      {{ consulta.tipo }}
+                    </p>
+
+                    <span
+                      class="mt-2 inline-block rounded-full px-2 py-1 text-[10px] font-medium"
+                      [class]="obterClasseStatus(consulta.status)"
+                    >
+                      {{ obterTextoStatus(consulta.status) }}
+                    </span>
+                  </div>
+                } @empty {
+                  <div
+                    class="rounded-xl border border-dashed border-slate-200 p-3 text-center text-xs text-slate-400"
+                  >
+                    Sem consultas
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      @if (carregandoCalendario()) {
+        <p class="mt-4 text-center text-sm text-slate-400">Carregando consultas...</p>
+      }
+
+      @if (erroCalendario()) {
+        <p role="alert" class="mt-4 text-sm text-red-600">
+          {{ erroCalendario() }}
+        </p>
+      }
+    </section>
+  }
 
   <!-- Erro -->
   @if (erro()) {

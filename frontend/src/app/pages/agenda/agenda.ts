@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { AgendamentoService } from '../../core/services/agendamento';
@@ -24,10 +24,103 @@ export class Agenda implements OnInit {
 
   dataSelecionada = this.obterDataAtual();
 
+  // Calendário mensal
+  agendamentosCalendario = signal<Agendamento[]>([]);
+  carregandoCalendario = signal(false);
+  erroCalendario = signal('');
+
+  visualizacao = signal<'mensal' | 'semanal'>('mensal');
+
+  // Mês exibido no calendário
+  mesCalendario = signal(this.obterDataAtual().slice(0, 7));
+
+  // Nomes dos dias da semana
+  diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+
+  // Gera os dias que serão exibidos no calendário
+  diasCalendario = computed(() => {
+    const [ano, mes] = this.mesCalendario().split('-').map(Number);
+
+    const primeiroDiaSemana = new Date(ano, mes - 1, 1).getDay();
+    const quantidadeDias = new Date(ano, mes, 0).getDate();
+
+    const dias: (number | null)[] = [];
+
+    // Espaços vazios antes do primeiro dia do mês
+    for (let i = 0; i < primeiroDiaSemana; i++) {
+      dias.push(null);
+    }
+
+    // Dias do mês
+    for (let dia = 1; dia <= quantidadeDias; dia++) {
+      dias.push(dia);
+    }
+
+    return dias;
+  });
+
+  // Data de referência da semana exibida
+  dataReferenciaSemana = signal(this.obterDataAtual());
+
+  // Gera os sete dias da semana, começando no domingo
+  diasSemanaCalendario = computed(() => {
+    const [ano, mes, dia] = this.dataReferenciaSemana().split('-').map(Number);
+
+    const inicio = new Date(ano, mes - 1, dia);
+    inicio.setDate(inicio.getDate() - inicio.getDay());
+
+    return Array.from({ length: 7 }, (_, indice) => {
+      const data = new Date(inicio);
+      data.setDate(inicio.getDate() + indice);
+
+      const anoDia = data.getFullYear();
+      const mesDia = String(data.getMonth() + 1).padStart(2, '0');
+      const numeroDia = String(data.getDate()).padStart(2, '0');
+
+      return {
+        data: `${anoDia}-${mesDia}-${numeroDia}`,
+        numero: data.getDate(),
+        nome: new Intl.DateTimeFormat('pt-BR', {
+          weekday: 'short',
+        }).format(data),
+      };
+    });
+  });
+
+  // Consultas de um determinado dia da semana
+  consultasDoDia(data: string): Agendamento[] {
+    return this.agendamentosCalendario()
+      .filter((agendamento) => agendamento.data === data)
+      .sort((a, b) => a.horaInicio.localeCompare(b.horaInicio));
+  }
+
+  // Navega entre as semanas
+  alterarSemana(quantidade: number): void {
+    const [ano, mes, dia] = this.dataReferenciaSemana().split('-').map(Number);
+
+    const data = new Date(ano, mes - 1, dia);
+    data.setDate(data.getDate() + quantidade * 7);
+
+    const novoAno = data.getFullYear();
+    const novoMes = String(data.getMonth() + 1).padStart(2, '0');
+    const novoDia = String(data.getDate()).padStart(2, '0');
+
+    this.dataReferenciaSemana.set(`${novoAno}-${novoMes}-${novoDia}`);
+  }
+
+  // Seleciona um dia da visualização semanal
+  selecionarDiaSemana(data: string): void {
+    this.dataSelecionada = data;
+    this.dataReferenciaSemana.set(data);
+    this.mesCalendario.set(data.slice(0, 7));
+    this.carregarAgendamentos();
+  }
+
   constructor(private agendamentoService: AgendamentoService) {}
 
   ngOnInit(): void {
     this.carregarAgendamentos();
+    this.carregarCalendario();
   }
 
   private obterDataAtual(): string {
@@ -70,13 +163,80 @@ export class Agenda implements OnInit {
     const novoDia = String(data.getDate()).padStart(2, '0');
 
     this.dataSelecionada = `${novoAno}-${novoMes}-${novoDia}`;
-
+    this.dataReferenciaSemana.set(this.dataSelecionada);
+    this.mesCalendario.set(this.dataSelecionada.slice(0, 7));
     this.carregarAgendamentos();
   }
 
   voltarHoje(): void {
     this.dataSelecionada = this.obterDataAtual();
+    this.dataReferenciaSemana.set(this.dataSelecionada);
+    this.mesCalendario.set(this.dataSelecionada.slice(0, 7));
     this.carregarAgendamentos();
+  }
+
+  aoSelecionarData(): void {
+    if (!this.dataSelecionada) return;
+
+    this.dataReferenciaSemana.set(this.dataSelecionada);
+    this.mesCalendario.set(this.dataSelecionada.slice(0, 7));
+    this.carregarAgendamentos();
+  }
+
+  carregarCalendario(): void {
+    this.carregandoCalendario.set(true);
+    this.erroCalendario.set('');
+
+    this.agendamentoService.listar().subscribe({
+      next: (agendamentos) => {
+        this.agendamentosCalendario.set(agendamentos);
+        this.carregandoCalendario.set(false);
+      },
+      error: (erro) => {
+        console.error('Erro ao carregar calendário:', erro);
+        this.erroCalendario.set('Não foi possível carregar o calendário.');
+        this.carregandoCalendario.set(false);
+      },
+    });
+  }
+
+  alterarMes(quantidade: number): void {
+    const [ano, mes] = this.mesCalendario().split('-').map(Number);
+
+    const novaData = new Date(ano, mes - 1 + quantidade, 1);
+
+    const novoAno = novaData.getFullYear();
+    const novoMes = String(novaData.getMonth() + 1).padStart(2, '0');
+
+    this.mesCalendario.set(`${novoAno}-${novoMes}`);
+  }
+
+  obterNomeMes(): string {
+    const [ano, mes] = this.mesCalendario().split('-').map(Number);
+
+    const data = new Date(ano, mes - 1, 1);
+
+    return new Intl.DateTimeFormat('pt-BR', {
+      month: 'long',
+      year: 'numeric',
+    }).format(data);
+  }
+
+  formatarDataCalendario(dia: number): string {
+    return `${this.mesCalendario()}-${String(dia).padStart(2, '0')}`;
+  }
+
+  selecionarDia(dia: number): void {
+    this.dataSelecionada = this.formatarDataCalendario(dia);
+    this.dataReferenciaSemana.set(this.dataSelecionada);
+
+    this.carregarAgendamentos();
+  }
+
+  quantidadeConsultasDia(dia: number): number {
+    const data = this.formatarDataCalendario(dia);
+
+    return this.agendamentosCalendario().filter((agendamento) => agendamento.data === data).length;
   }
 
   obterClasseStatus(status: StatusAgendamento): string {
@@ -144,9 +304,12 @@ export class Agenda implements OnInit {
           agendamentos.map((item) => (item.id === atualizado.id ? atualizado : item)),
         );
 
+        this.agendamentosCalendario.update((agendamentos) =>
+          agendamentos.map((item) => (item.id === atualizado.id ? atualizado : item)),
+        );
+
         this.agendamentoParaCancelar.set(null);
         this.cancelando.set(false);
-
         this.sucesso.set(`Consulta de ${agendamento.pacienteNome} cancelada com sucesso.`);
       },
 
@@ -175,6 +338,10 @@ export class Agenda implements OnInit {
     this.agendamentoService.confirmar(agendamento.id).subscribe({
       next: (atualizado) => {
         this.agendamentos.update((agendamentos) =>
+          agendamentos.map((item) => (item.id === atualizado.id ? atualizado : item)),
+        );
+
+        this.agendamentosCalendario.update((agendamentos) =>
           agendamentos.map((item) => (item.id === atualizado.id ? atualizado : item)),
         );
 
@@ -209,6 +376,10 @@ export class Agenda implements OnInit {
           agendamentos.map((item) => (item.id === atualizado.id ? atualizado : item)),
         );
 
+        this.agendamentosCalendario.update((agendamentos) =>
+          agendamentos.map((item) => (item.id === atualizado.id ? atualizado : item)),
+        );
+
         this.alterandoStatusId.set(null);
         this.sucesso.set(`Consulta de ${agendamento.pacienteNome} concluída com sucesso.`);
       },
@@ -240,7 +411,9 @@ export class Agenda implements OnInit {
         this.agendamentos.update((agendamentos) =>
           agendamentos.map((item) => (item.id === atualizado.id ? atualizado : item)),
         );
-
+        this.agendamentosCalendario.update((agendamentos) =>
+          agendamentos.map((item) => (item.id === atualizado.id ? atualizado : item)),
+        );
         this.alterandoStatusId.set(null);
         this.sucesso.set(`Falta de ${agendamento.pacienteNome} registrada com sucesso.`);
       },
