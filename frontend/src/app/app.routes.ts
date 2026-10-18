@@ -5,6 +5,7 @@ import { Agenda } from './pages/agenda/agenda';
 import { Pacientes } from './pages/pacientes/pacientes';
 import { PacienteForm } from './pages/paciente-form/paciente-form';
 import { AgendamentoForm } from './pages/agendamento-form/agendamento-form';
+import { PacienteDetalhes } from './pages/paciente-detalhes/paciente-detalhes';
 
 export const routes: Routes = [
   {
@@ -26,6 +27,11 @@ export const routes: Routes = [
     path: 'pacientes/novo',
     component: PacienteForm,
     title: 'Novo Paciente | AgendaCare',
+  },
+  {
+    path: 'pacientes/:id',
+    component: PacienteDetalhes,
+    title: 'Histórico do Paciente | AgendaCare',
   },
   {
     path: 'pacientes/:id/editar',

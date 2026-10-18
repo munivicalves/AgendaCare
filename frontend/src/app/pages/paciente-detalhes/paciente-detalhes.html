@@ -1,0 +1,127 @@
+<div class="space-y-6 p-6">
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <a
+        routerLink="/pacientes"
+        class="mb-3 inline-block text-sm font-medium text-blue-600 hover:underline"
+      >
+        ← Voltar para pacientes
+      </a>
+
+      <h1 class="text-2xl font-bold text-slate-900">Histórico do paciente</h1>
+
+      <p class="mt-1 text-sm text-slate-500">Consulte os dados e atendimentos realizados.</p>
+    </div>
+
+    @if (paciente(); as dados) {
+      <a
+        [routerLink]="['/pacientes', dados.id, 'editar']"
+        class="rounded-xl bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+      >
+        Editar paciente
+      </a>
+    }
+  </div>
+
+  @if (carregando()) {
+    <div class="rounded-xl border border-slate-200 bg-white p-6 text-slate-500">
+      Carregando histórico...
+    </div>
+  }
+
+  @if (erro()) {
+    <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+      {{ erro() }}
+    </div>
+  }
+
+  @if (!carregando() && paciente(); as dados) {
+    <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <h2 class="mb-5 text-lg font-semibold text-slate-900">Dados do paciente</h2>
+
+      <div class="grid gap-5 sm:grid-cols-2">
+        <div>
+          <p class="text-xs font-medium text-slate-500">Nome</p>
+          <p class="mt-1 font-semibold text-slate-900">{{ dados.nome }}</p>
+        </div>
+
+        <div>
+          <p class="text-xs font-medium text-slate-500">E-mail</p>
+          <p class="mt-1 text-slate-700">{{ dados.email || 'Não informado' }}</p>
+        </div>
+
+        <div>
+          <p class="text-xs font-medium text-slate-500">Telefone</p>
+          <p class="mt-1 text-slate-700">{{ dados.telefone || 'Não informado' }}</p>
+        </div>
+
+        <div>
+          <p class="text-xs font-medium text-slate-500">Data de nascimento</p>
+          <p class="mt-1 text-slate-700">
+            {{ dados.dataNascimento ? formatarData(dados.dataNascimento) : 'Não informada' }}
+          </p>
+        </div>
+      </div>
+
+      @if (dados.observacoes) {
+        <div class="mt-5 border-t border-slate-100 pt-4">
+          <p class="text-xs font-medium text-slate-500">Observações</p>
+          <p class="mt-1 whitespace-pre-line text-sm text-slate-700">
+            {{ dados.observacoes }}
+          </p>
+        </div>
+      }
+    </section>
+
+    <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div class="border-b border-slate-100 p-6">
+        <h2 class="text-lg font-semibold text-slate-900">Histórico de atendimentos</h2>
+
+        <p class="mt-1 text-sm text-slate-500">
+          {{ agendamentos().length }} consulta(s) encontrada(s)
+        </p>
+      </div>
+
+      @if (agendamentos().length === 0) {
+        <div class="p-8 text-center text-sm text-slate-500">
+          Este paciente ainda não possui atendimentos registrados.
+        </div>
+      } @else {
+        <div class="divide-y divide-slate-100">
+          @for (agendamento of agendamentos(); track agendamento.id) {
+            <div class="p-6">
+              <div class="flex flex-wrap items-start justify-between gap-4">
+                <div class="space-y-2">
+                  <p class="font-semibold text-slate-900">
+                    {{ agendamento.tipo }}
+                  </p>
+
+                  <p class="text-sm text-slate-600">
+                    {{ formatarData(agendamento.data) }}
+                    ·
+                    {{ agendamento.horaInicio.slice(0, 5) }}
+                    às
+                    {{ agendamento.horaFim.slice(0, 5) }}
+                  </p>
+
+                  @if (agendamento.observacoes) {
+                    <p class="whitespace-pre-line text-sm text-slate-500">
+                      {{ agendamento.observacoes }}
+                    </p>
+                  }
+                </div>
+
+                <span
+                  class="rounded-full px-3 py-1 text-xs font-semibold"
+                  [class]="obterClasseStatus(agendamento.status)"
+                >
+                  {{ obterTextoStatus(agendamento.status) }}
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </section>
+  }
+</div>
