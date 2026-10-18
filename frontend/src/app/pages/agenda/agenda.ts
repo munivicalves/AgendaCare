@@ -19,6 +19,7 @@ export class Agenda implements OnInit {
   agendamentoParaCancelar = signal<Agendamento | null>(null);
   cancelando = signal(false);
   sucesso = signal('');
+  confirmandoId = signal<number | null>(null);
 
   dataSelecionada = this.obterDataAtual();
 
@@ -157,6 +158,38 @@ export class Agenda implements OnInit {
 
         this.agendamentoParaCancelar.set(null);
         this.cancelando.set(false);
+      },
+    });
+  }
+
+  confirmarAgendamento(agendamento: Agendamento): void {
+    if (agendamento.status !== 'AGENDADO' || this.confirmandoId() !== null) {
+      return;
+    }
+
+    this.confirmandoId.set(agendamento.id);
+    this.erro.set('');
+    this.sucesso.set('');
+
+    this.agendamentoService.confirmar(agendamento.id).subscribe({
+      next: (atualizado) => {
+        this.agendamentos.update((agendamentos) =>
+          agendamentos.map((item) => (item.id === atualizado.id ? atualizado : item)),
+        );
+
+        this.confirmandoId.set(null);
+
+        this.sucesso.set(`Consulta de ${agendamento.pacienteNome} confirmada com sucesso.`);
+      },
+
+      error: (erro) => {
+        console.error('Erro ao confirmar agendamento:', erro);
+
+        this.erro.set(
+          erro.error?.mensagem || 'Não foi possível confirmar a consulta. Tente novamente.',
+        );
+
+        this.confirmandoId.set(null);
       },
     });
   }

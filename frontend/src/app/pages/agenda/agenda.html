@@ -139,6 +139,21 @@
                 Editar
               </a>
 
+              @if (agendamento.status === 'AGENDADO') {
+                <button
+                  type="button"
+                  (click)="confirmarAgendamento(agendamento)"
+                  [disabled]="confirmandoId() !== null || cancelando()"
+                  class="rounded-xl border border-green-200 bg-green-50 px-4 py-2 text-sm font-medium text-green-700 transition hover:bg-green-100 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  @if (confirmandoId() === agendamento.id) {
+                    Confirmando...
+                  } @else {
+                    Confirmar
+                  }
+                </button>
+              }
+
               @if (agendamento.status !== 'CANCELADO' && agendamento.status !== 'CONCLUIDO') {
                 <button
                   type="button"

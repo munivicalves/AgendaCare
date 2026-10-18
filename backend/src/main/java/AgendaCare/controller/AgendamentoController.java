@@ -78,6 +78,15 @@ public class AgendamentoController {
                                 agendamentoService.atualizar(id, dto));
         }
 
+        // Confirmar agendamento
+        @PatchMapping("/{id}/confirmar")
+        public ResponseEntity<AgendamentoResponseDTO> confirmar(
+                        @PathVariable Long id) {
+
+                return ResponseEntity.ok(
+                                agendamentoService.confirmar(id));
+        }
+
         // Cancelar agendamento
         @PatchMapping("/{id}/cancelar")
         public ResponseEntity<AgendamentoResponseDTO> cancelar(
@@ -85,6 +94,22 @@ public class AgendamentoController {
 
                 return ResponseEntity.ok(
                                 agendamentoService.cancelar(id));
+        }
+
+        @PatchMapping("/{id}/concluir")
+        public ResponseEntity<AgendamentoResponseDTO> concluir(
+                        @PathVariable Long id) {
+
+                return ResponseEntity.ok(
+                                agendamentoService.concluir(id));
+        }
+
+        @PatchMapping("/{id}/falta")
+        public ResponseEntity<AgendamentoResponseDTO> registrarFalta(
+                        @PathVariable Long id) {
+
+                return ResponseEntity.ok(
+                                agendamentoService.registrarFalta(id));
         }
 
         // Excluir definitivamente

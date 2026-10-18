@@ -143,6 +143,55 @@ public class AgendamentoService {
                 return new AgendamentoResponseDTO(atualizado);
         }
 
+        public AgendamentoResponseDTO confirmar(Long id) {
+
+                Agendamento agendamento = buscarEntidadePorId(id);
+
+                if (agendamento.getStatus() != StatusAgendamento.AGENDADO) {
+                        throw new IllegalArgumentException(
+                                        "Somente consultas com status AGENDADO podem ser confirmadas.");
+                }
+
+                agendamento.setStatus(StatusAgendamento.CONFIRMADO);
+
+                Agendamento confirmado = agendamentoRepository.save(agendamento);
+
+                return new AgendamentoResponseDTO(confirmado);
+        }
+
+        public AgendamentoResponseDTO concluir(Long id) {
+
+                Agendamento agendamento = buscarEntidadePorId(id);
+
+                if (agendamento.getStatus() != StatusAgendamento.CONFIRMADO) {
+                        throw new IllegalArgumentException(
+                                        "Somente consultas confirmadas podem ser concluídas.");
+                }
+
+                agendamento.setStatus(StatusAgendamento.CONCLUIDO);
+
+                Agendamento concluido = agendamentoRepository.save(agendamento);
+
+                return new AgendamentoResponseDTO(concluido);
+        }
+
+        public AgendamentoResponseDTO registrarFalta(Long id) {
+
+                Agendamento agendamento = buscarEntidadePorId(id);
+
+                if (agendamento.getStatus() != StatusAgendamento.AGENDADO
+                                && agendamento.getStatus() != StatusAgendamento.CONFIRMADO) {
+                        throw new IllegalArgumentException(
+                                        "Somente consultas agendadas ou confirmadas podem ser marcadas como falta.");
+                }
+
+                agendamento.setStatus(StatusAgendamento.FALTOU);
+
+                Agendamento atualizado = agendamentoRepository.save(agendamento);
+
+                return new AgendamentoResponseDTO(atualizado);
+        }
+
         public AgendamentoResponseDTO cancelar(Long id) {
 
                 Agendamento agendamento = buscarEntidadePorId(id);

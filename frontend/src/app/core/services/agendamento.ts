@@ -36,6 +36,10 @@ export class AgendamentoService {
     return this.http.put<Agendamento>(`${this.apiUrl}/${id}`, agendamento);
   }
 
+  confirmar(id: number): Observable<Agendamento> {
+    return this.http.patch<Agendamento>(`${this.apiUrl}/${id}/confirmar`, {});
+  }
+
   cancelar(id: number): Observable<Agendamento> {
     return this.http.patch<Agendamento>(`${this.apiUrl}/${id}/cancelar`, {});
   }
