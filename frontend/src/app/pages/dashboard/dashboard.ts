@@ -16,6 +16,65 @@ export class Dashboard implements OnInit {
   totalPacientes = signal(0);
   agendamentos = signal<Agendamento[]>([]);
 
+  // Total de consultas concluídas
+  totalConcluidas = computed(
+    () => this.agendamentos().filter((agendamento) => agendamento.status === 'CONCLUIDO').length,
+  );
+
+  // Total de faltas registradas
+  totalFaltas = computed(
+    () => this.agendamentos().filter((agendamento) => agendamento.status === 'FALTOU').length,
+  );
+
+  // Total de consultas canceladas
+  totalCanceladas = computed(
+    () => this.agendamentos().filter((agendamento) => agendamento.status === 'CANCELADO').length,
+  );
+
+  // Percentual de comparecimento
+  taxaComparecimento = computed(() => {
+    const concluidas = this.totalConcluidas();
+    const faltas = this.totalFaltas();
+
+    const total = concluidas + faltas;
+
+    if (total === 0) {
+      return null;
+    }
+
+    return (concluidas / total) * 100;
+  });
+
+  atendimentosPorMes = computed(() => {
+    const hoje = new Date();
+
+    return Array.from({ length: 6 }, (_, indice) => {
+      const data = new Date(hoje.getFullYear(), hoje.getMonth() - (5 - indice), 1);
+
+      const ano = data.getFullYear();
+      const mes = String(data.getMonth() + 1).padStart(2, '0');
+      const referencia = `${ano}-${mes}`;
+
+      const total = this.agendamentos().filter((agendamento) =>
+        agendamento.data.startsWith(referencia),
+      ).length;
+
+      const nome = new Intl.DateTimeFormat('pt-BR', {
+        month: 'short',
+      }).format(data);
+
+      return {
+        referencia,
+        nome,
+        total,
+      };
+    });
+  });
+
+  maiorQuantidadeMensal = computed(() =>
+    Math.max(1, ...this.atendimentosPorMes().map((mes) => mes.total)),
+  );
+
   carregando = signal(false);
   erro = signal('');
 
