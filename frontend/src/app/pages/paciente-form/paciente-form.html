@@ -9,6 +9,7 @@
       ← Voltar para pacientes
     </button>
 
+    <p class="page-eyebrow">AgendaCare / Cadastro</p>
     <h1 class="text-3xl font-bold text-slate-800">
       @if (modoEdicao()) {
         Editar paciente
@@ -28,7 +29,7 @@
 
   <!-- Erro da API -->
   @if (erro()) {
-    <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-red-600">
+    <div role="alert" class="rounded-xl border border-red-200 bg-red-50 p-4 text-red-600">
       {{ erro() }}
     </div>
   }
@@ -143,7 +144,9 @@
     </div>
 
     <!-- Botões -->
-    <div class="mt-8 flex justify-end gap-3 border-t border-slate-100 pt-6">
+    <div
+      class="mt-8 flex flex-col-reverse sm:flex-row justify-end gap-3 border-t border-slate-100 pt-6"
+    >
       <button
         type="button"
         routerLink="/pacientes"

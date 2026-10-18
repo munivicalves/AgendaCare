@@ -1,0 +1,233 @@
+.sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: 256px;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 18px;
+  background: #fff;
+  border-right: 1px solid #e2e8f0;
+  overflow-y: auto;
+}
+.brand-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 48px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+.brand-mark {
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  background: #0f766e;
+  color: #fff;
+  box-shadow: 0 5px 12px #0f766e22;
+}
+.brand-mark svg {
+  width: 26px;
+  stroke-width: 2.7;
+}
+.brand-name {
+  display: block;
+  font-size: 20px;
+  font-weight: 750;
+  letter-spacing: -0.6px;
+  color: #123331;
+}
+.brand-caption {
+  display: block;
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 2px;
+}
+.nav-caption {
+  padding-inline: 14px;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  font-weight: 700;
+  color: #64748b;
+  margin-bottom: 12px;
+}
+nav {
+  display: grid;
+  gap: 8px;
+}
+nav a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #526170;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+nav a:hover {
+  background: #f1f5f9;
+}
+nav a.active {
+  background: #e6f4f1;
+  color: #0c655e;
+  box-shadow: inset 3px 0 #0f766e;
+}
+svg {
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.sidebar-footer {
+  margin-top: auto;
+  padding: 24px 14px 0;
+  border-top: 1px solid #e2e8f0;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.8;
+}
+.footer-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #0f766e;
+  margin-right: 8px;
+}
+.close-menu {
+  display: none;
+  font-size: 26px;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+.menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 35;
+  background: #0f172a80;
+  backdrop-filter: blur(3px);
+}
+@media (max-width: 1023px) {
+  .sidebar {
+    visibility: hidden;
+    transform: translateX(-100%);
+    width: min(300px, 90vw);
+  }
+  .sidebar.is-open {
+    visibility: visible;
+    transform: translateX(0);
+  }
+  .close-menu {
+    display: block;
+  }
+  .brand-row {
+    justify-content: space-between;
+  }
+}
+
+/* A compact navigation rail gives the workspace more room on desktop. */
+.sidebar {
+  background: linear-gradient(180deg, #ffffff 0%, #f6faf9 100%);
+  box-shadow: 5px 0 24px #12333105;
+  transition: width 220ms ease;
+}
+.brand-row {
+  margin-bottom: 24px;
+}
+.brand-mark {
+  background: linear-gradient(145deg, #169587, #0c625d);
+  box-shadow: 0 6px 14px #0f766e25;
+  flex-shrink: 0;
+}
+.brand-caption {
+  font-size: 10px;
+  letter-spacing: 0.02em;
+}
+nav a {
+  min-height: 48px;
+  border: 1px solid transparent;
+}
+nav a:hover {
+  background: #edf5f3;
+  color: #115e59;
+}
+nav a.active {
+  background: #e2f2ed;
+  border-color: #cce7dd;
+  box-shadow:
+    inset 3px 0 #0f766e,
+    0 3px 8px #0f766e08;
+}
+.collapse-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 14px;
+  margin-bottom: 24px;
+  border: 1px solid #e0e9e6;
+  border-radius: 12px;
+  background: #fff;
+  color: #526c67;
+  font-size: 12px;
+  font-weight: 600;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+.collapse-toggle:hover {
+  background: #e6f4ef;
+  color: #115e59;
+  border-color: #bddbd1;
+}
+.sidebar-footer {
+  background: #edf5f2;
+  border: 1px solid #ddebe5;
+  border-radius: 14px;
+  padding: 16px;
+}
+@media (min-width: 1024px) {
+  .sidebar.is-collapsed {
+    width: 84px;
+    padding-inline: 12px;
+  }
+  .is-collapsed .brand-row {
+    justify-content: center;
+  }
+  .is-collapsed .brand > span:last-child,
+  .is-collapsed .nav-label,
+  .is-collapsed .nav-caption,
+  .is-collapsed .sidebar-footer,
+  .is-collapsed .collapse-toggle span {
+    display: none;
+  }
+  .is-collapsed nav a,
+  .is-collapsed .collapse-toggle {
+    justify-content: center;
+    padding-inline: 0;
+  }
+  .is-collapsed .toggle-chevron {
+    transform: rotate(180deg);
+    transform-origin: 14px 12px;
+  }
+}
+@media (max-width: 1023px) {
+  .collapse-toggle {
+    display: none;
+  }
+}

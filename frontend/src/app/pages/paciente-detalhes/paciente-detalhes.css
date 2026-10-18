@@ -1,0 +1,11 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+form > div,
+section > div {
+  min-width: 0;
+}
+[role='alert'] {
+  overflow-wrap: anywhere;
+}

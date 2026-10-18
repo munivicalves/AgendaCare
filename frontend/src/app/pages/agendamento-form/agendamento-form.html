@@ -7,6 +7,7 @@
     >
       ← Voltar para agenda
     </a>
+    <p class="page-eyebrow">AgendaCare / Agendamento</p>
     <h1 class="text-3xl font-bold text-slate-800">
       {{ modoEdicao() ? 'Editar consulta' : 'Nova consulta' }}
     </h1>
@@ -27,7 +28,9 @@
   }
 
   @if (carregandoAgendamento()) {
-    <div class="rounded-xl bg-blue-50 p-4 text-blue-600">Carregando dados da consulta...</div>
+    <div role="status" class="rounded-xl bg-blue-50 p-4 text-blue-600">
+      Carregando dados da consulta...
+    </div>
   }
 
   <form

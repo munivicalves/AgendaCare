@@ -1,7 +1,8 @@
 <div class="space-y-6">
   <!-- Cabeçalho -->
-  <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+  <div class="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
     <div>
+      <p class="page-eyebrow">AgendaCare / Atendimentos</p>
       <h1 class="text-3xl font-bold text-slate-800">Agenda de Consultas</h1>
 
       <p class="mt-1 text-slate-500">Visualize e organize seus atendimentos.</p>
@@ -14,62 +15,75 @@
     </a>
   </div>
 
-  <!-- Seleção de data -->
-  <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+  <!-- Filtro de consultas por data -->
+  <section class="day-filter" aria-labelledby="day-filter-title">
+    <div class="day-filter-heading">
+      <span class="day-filter-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <rect x="3" y="5" width="18" height="16" rx="3" />
+          <path d="M7 3v4M17 3v4M3 11h18M8 15h2M14 15h2" />
+        </svg>
+      </span>
       <div>
-        <h2 class="font-semibold text-slate-800">Consultas do dia</h2>
-
-        <p class="mt-1 text-sm text-slate-500">
-          Selecione uma data para visualizar os agendamentos.
-        </p>
+        <h2 id="day-filter-title">Consultas do dia</h2>
+        <p>Escolha uma data para organizar seus atendimentos.</p>
       </div>
+    </div>
 
-      <div class="flex flex-wrap items-center gap-2">
+    <div class="day-filter-controls">
+      <div class="day-date-navigation" role="group" aria-label="Navegar entre os dias">
         <button
           type="button"
           (click)="alterarData(-1)"
-          class="rounded-xl border border-slate-200 px-4 py-3 text-slate-600 transition hover:bg-slate-50"
+          class="day-arrow"
           aria-label="Dia anterior"
+          title="Dia anterior"
         >
-          ←
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 7-5 5 5 5" /></svg>
         </button>
-
-        <input
-          type="date"
-          [(ngModel)]="dataSelecionada"
-          (ngModelChange)="aoSelecionarData()"
-          class="rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-blue-500"
-        />
-
+        <div class="day-date-field">
+          <label for="data-consultas">Data selecionada</label>
+          <input
+            id="data-consultas"
+            type="date"
+            [(ngModel)]="dataSelecionada"
+            (ngModelChange)="aoSelecionarData()"
+          />
+        </div>
         <button
           type="button"
           (click)="alterarData(1)"
-          class="rounded-xl border border-slate-200 px-4 py-3 text-slate-600 transition hover:bg-slate-50"
+          class="day-arrow"
           aria-label="Próximo dia"
+          title="Próximo dia"
         >
-          →
-        </button>
-
-        <button
-          type="button"
-          (click)="voltarHoje()"
-          class="rounded-xl bg-blue-50 px-4 py-3 font-medium text-blue-600 transition hover:bg-blue-100"
-        >
-          Hoje
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 7 5 5-5 5" /></svg>
         </button>
       </div>
+      <button
+        type="button"
+        (click)="voltarHoje()"
+        class="day-today"
+        title="Voltar para a data de hoje"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="8" />
+          <path d="M12 8v4l3 2" />
+        </svg>
+        Hoje
+      </button>
     </div>
-  </div>
+  </section>
 
   <!-- Seleção da visualização -->
-  <div class="flex items-center justify-between gap-4">
+  <div class="flex flex-wrap items-center justify-between gap-4">
     <h2 class="font-semibold text-slate-800">Visualização da agenda</h2>
 
-    <div class="flex rounded-xl border border-slate-200 bg-white p-1 shadow-sm">
+    <div class="segmented-control flex rounded-xl border border-slate-200 bg-white p-1 shadow-sm">
       <button
         type="button"
         (click)="visualizacao.set('mensal')"
+        [attr.aria-pressed]="visualizacao() === 'mensal'"
         [class.bg-blue-600]="visualizacao() === 'mensal'"
         [class.text-white]="visualizacao() === 'mensal'"
         class="rounded-lg px-4 py-2 text-sm font-medium transition"
@@ -80,6 +94,7 @@
       <button
         type="button"
         (click)="visualizacao.set('semanal')"
+        [attr.aria-pressed]="visualizacao() === 'semanal'"
         [class.bg-blue-600]="visualizacao() === 'semanal'"
         [class.text-white]="visualizacao() === 'semanal'"
         class="rounded-lg px-4 py-2 text-sm font-medium transition"
@@ -130,7 +145,7 @@
       }
 
       <!-- Dias da semana -->
-      <div class="mb-2 grid grid-cols-7 gap-2">
+      <div class="month-weekdays mb-2 grid grid-cols-7 gap-2">
         @for (diaSemana of diasSemana; track $index) {
           <div class="py-2 text-center text-xs font-semibold text-slate-500">
             {{ diaSemana }}
@@ -139,12 +154,16 @@
       </div>
 
       <!-- Dias do mês -->
-      <div class="grid grid-cols-7 gap-2">
+      <div class="month-grid grid grid-cols-7 gap-2">
         @for (dia of diasCalendario(); track $index) {
           @if (dia !== null) {
             <button
               type="button"
               (click)="selecionarDia(dia)"
+              [attr.aria-pressed]="dataSelecionada === formatarDataCalendario(dia)"
+              [attr.aria-label]="
+                formatarDataCalendario(dia) + ': ' + quantidadeConsultasDia(dia) + ' consultas'
+              "
               [class.bg-blue-600]="dataSelecionada === formatarDataCalendario(dia)"
               [class.text-white]="dataSelecionada === formatarDataCalendario(dia)"
               [class.bg-slate-50]="dataSelecionada !== formatarDataCalendario(dia)"
@@ -216,13 +235,15 @@
 
       <!-- Grade semanal -->
       <div class="overflow-x-auto">
-        <div class="grid min-w-[770px] grid-cols-7 gap-3">
+        <div class="week-grid grid grid-cols-7 gap-3">
           @for (dia of diasSemanaCalendario(); track dia.data) {
             <div class="min-w-0">
               <!-- Dia da semana -->
               <button
                 type="button"
                 (click)="selecionarDiaSemana(dia.data)"
+                [attr.aria-pressed]="dataSelecionada === dia.data"
+                [attr.aria-label]="dia.data"
                 [class.bg-blue-600]="dataSelecionada === dia.data"
                 [class.text-white]="dataSelecionada === dia.data"
                 [class.bg-slate-100]="dataSelecionada !== dia.data"
@@ -314,11 +335,11 @@
       <div class="divide-y divide-slate-100">
         @for (agendamento of agendamentos(); track agendamento.id) {
           <div
-            class="flex flex-col gap-4 p-6 transition hover:bg-slate-50 sm:flex-row sm:items-center sm:justify-between"
+            class="flex flex-col gap-4 p-6 transition hover:bg-slate-50 xl:flex-row xl:items-center xl:justify-between"
           >
             <div class="flex items-start gap-4">
               <!-- Horário -->
-              <div class="rounded-xl bg-blue-50 px-4 py-3 text-center text-blue-700">
+              <div role="status" class="rounded-xl bg-blue-50 px-4 py-3 text-center text-blue-700">
                 <p class="font-bold">
                   {{ agendamento.horaInicio.slice(0, 5) }}
                 </p>
@@ -347,7 +368,7 @@
             </div>
 
             <!-- Status -->
-            <div class="flex items-center gap-3">
+            <div class="appointment-actions flex flex-wrap items-center gap-3">
               <span
                 class="w-fit rounded-full px-3 py-1 text-xs font-semibold"
                 [class]="obterClasseStatus(agendamento.status)"
@@ -442,9 +463,12 @@
 </div>
 
 @if (agendamentoParaCancelar(); as agendamento) {
-  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+  <div class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
     <div
       role="dialog"
+      cdkTrapFocus
+      [cdkTrapFocusAutoCapture]="true"
+      (keydown.escape)="fecharModalCancelamento()"
       aria-modal="true"
       aria-labelledby="titulo-cancelamento"
       class="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"

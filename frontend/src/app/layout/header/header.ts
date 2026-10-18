@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, input, output, viewChild } from '@angular/core';
 
 @Component({
   imports: [],
@@ -6,4 +6,11 @@ import { Component } from '@angular/core';
   styleUrl: './header.css',
   templateUrl: './header.html',
 })
-export class Header {}
+export class Header {
+  readonly menuAberto = input(false);
+  readonly abrirMenu = output<void>();
+  readonly menu = viewChild<ElementRef<HTMLButtonElement>>('menu');
+  focarMenu(): void {
+    requestAnimationFrame(() => this.menu()?.nativeElement.focus());
+  }
+}

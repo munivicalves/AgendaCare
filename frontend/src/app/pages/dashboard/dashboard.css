@@ -1,0 +1,16 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+.monthly-chart > div {
+  min-width: 0;
+}
+@media (max-width: 639px) {
+  .monthly-chart {
+    gap: 6px;
+    height: 220px;
+  }
+  .monthly-chart span {
+    font-size: 11px;
+  }
+}

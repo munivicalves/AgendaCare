@@ -1,3 +1,4 @@
+import { A11yModule } from '@angular/cdk/a11y';
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
@@ -8,7 +9,7 @@ import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-agenda',
-  imports: [FormsModule, RouterLink, DatePipe],
+  imports: [A11yModule, FormsModule, RouterLink, DatePipe],
   templateUrl: './agenda.html',
   styleUrl: './agenda.css',
 })

@@ -1,4 +1,4 @@
-<div class="space-y-6 p-6">
+<div class="space-y-6">
   <div class="flex flex-wrap items-center justify-between gap-4">
     <div>
       <a
@@ -8,6 +8,7 @@
         ← Voltar para pacientes
       </a>
 
+      <p class="page-eyebrow">AgendaCare / Prontuário administrativo</p>
       <h1 class="text-2xl font-bold text-slate-900">Histórico do paciente</h1>
 
       <p class="mt-1 text-sm text-slate-500">Consulte os dados e atendimentos realizados.</p>
@@ -30,7 +31,7 @@
   }
 
   @if (erro()) {
-    <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+    <div role="alert" class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
       {{ erro() }}
     </div>
   }

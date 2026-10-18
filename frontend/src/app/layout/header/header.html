@@ -1,27 +1,26 @@
-<header class="flex h-20 items-center justify-between border-b border-slate-200 bg-white px-8">
-  <div>
-    <p class="text-sm text-slate-400">Bem-vinda ao</p>
-    <h2 class="text-xl font-semibold text-slate-800">AgendaCare</h2>
-  </div>
-
-  <div class="flex items-center gap-4">
+<header class="topbar">
+  <div class="flex min-w-0 items-center gap-3">
     <button
-      class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition hover:bg-slate-200"
+      #menu
+      type="button"
+      class="menu-toggle"
+      (click)="abrirMenu.emit()"
+      aria-label="Abrir menu de navegação"
+      aria-controls="navegacao-principal"
+      [attr.aria-expanded]="menuAberto()"
     >
-      🔔
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
     </button>
-
-    <div class="flex items-center gap-3">
-      <div
-        class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 font-semibold text-blue-600"
-      >
-        MA
-      </div>
-
-      <div class="hidden sm:block">
-        <p class="text-sm font-semibold text-slate-700">Profissional</p>
-        <p class="text-xs text-slate-400">AgendaCare</p>
-      </div>
+    <div>
+      <p class="text-xs text-slate-500">Seu espaço de cuidado</p>
+      <p class="font-semibold text-slate-800">AgendaCare</p>
     </div>
+  </div>
+  <div class="flex items-center gap-3">
+    <div class="hidden text-right sm:block">
+      <p class="text-sm font-semibold text-slate-700">Profissional</p>
+      <p class="text-xs text-slate-500">Gestão de atendimentos</p>
+    </div>
+    <span class="profile-avatar" aria-hidden="true">AC</span>
   </div>
 </header>

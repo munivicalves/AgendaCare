@@ -1,0 +1,42 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+.patient-table td:first-child {
+  min-width: 180px;
+}
+@media (max-width: 767px) {
+  .patient-table,
+  .patient-table tbody {
+    display: block;
+  }
+  .patient-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .patient-table tr {
+    display: block;
+    padding: 16px 20px;
+  }
+  .patient-table td {
+    display: block;
+    padding: 6px 0;
+    min-width: 0;
+  }
+  .patient-table td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: #566779;
+    margin-bottom: 2px;
+  }
+  .patient-table td:last-child > div {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+}

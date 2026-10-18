@@ -1,3 +1,4 @@
+import { A11yModule } from '@angular/cdk/a11y';
 import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -7,7 +8,7 @@ import { Paciente } from '../../models/paciente';
 
 @Component({
   selector: 'app-pacientes',
-  imports: [FormsModule, RouterLink],
+  imports: [A11yModule, FormsModule, RouterLink],
   templateUrl: './pacientes.html',
   styleUrl: './pacientes.css',
 })

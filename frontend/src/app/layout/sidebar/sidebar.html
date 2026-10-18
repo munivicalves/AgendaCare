@@ -1,50 +1,92 @@
-<aside class="flex h-screen w-64 flex-col border-r border-slate-200 bg-white px-4 py-6">
-  <!-- Logo -->
-  <div class="mb-10 flex items-center gap-3 px-2">
-    <div
-      class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-lg font-bold text-white"
-    >
-      A
-    </div>
-
-    <div>
-      <h1 class="text-xl font-bold text-slate-800">AgendaCare</h1>
-      <p class="text-xs text-slate-400">Gestão de atendimentos</p>
-    </div>
+@if (aberto()) {
+  <button
+    class="menu-backdrop"
+    type="button"
+    tabindex="-1"
+    aria-label="Fechar menu"
+    (click)="fechar.emit()"
+  ></button>
+}
+<aside
+  #painel
+  id="navegacao-principal"
+  class="sidebar"
+  [class.is-open]="aberto()"
+  [class.is-collapsed]="recolhida()"
+  [cdkTrapFocus]="aberto()"
+  (keydown.escape)="fechar.emit()"
+>
+  <div class="brand-row">
+    <a routerLink="/" (click)="fechar.emit()" class="brand" aria-label="AgendaCare, início">
+      <span class="brand-mark" aria-hidden="true"
+        ><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg
+      ></span>
+      <span
+        ><span class="brand-name">AgendaCare</span
+        ><span class="brand-caption">Gestão de atendimentos</span></span
+      >
+    </a>
+    <button type="button" class="close-menu" (click)="fechar.emit()" aria-label="Fechar menu">
+      &#215;
+    </button>
   </div>
-
-  <!-- Navegação -->
-  <nav class="flex flex-1 flex-col gap-2">
+  <button
+    type="button"
+    class="collapse-toggle"
+    (click)="alternar.emit()"
+    aria-controls="links-navegacao"
+    [attr.aria-expanded]="!recolhida()"
+    [attr.aria-label]="recolhida() ? 'Expandir menu lateral' : 'Recolher menu lateral'"
+    [attr.title]="recolhida() ? 'Expandir menu lateral' : 'Recolher menu lateral'"
+  >
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="3" y="4" width="18" height="16" rx="3" />
+      <path d="M9 4v16" />
+      <path class="toggle-chevron" d="m15 9-3 3 3 3" />
+    </svg>
+    <span>Recolher menu</span>
+  </button>
+  <p class="nav-caption">PRINCIPAL</p>
+  <nav id="links-navegacao" aria-label="Navegação principal">
     <a
       routerLink="/"
-      routerLinkActive="bg-blue-50 text-blue-600"
+      title="Dashboard"
+      aria-label="Dashboard"
+      routerLinkActive="active"
+      ariaCurrentWhenActive="page"
       [routerLinkActiveOptions]="{ exact: true }"
-      class="flex items-center gap-3 rounded-xl px-4 py-3 font-medium text-slate-600 transition hover:bg-slate-100"
+      (click)="fechar.emit()"
+      ><svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z" /></svg
+      ><span class="nav-label">Dashboard</span></a
     >
-      <span>▦</span>
-      Dashboard
-    </a>
-
     <a
       routerLink="/agenda"
-      routerLinkActive="bg-blue-50 text-blue-600"
-      class="flex items-center gap-3 rounded-xl px-4 py-3 font-medium text-slate-600 transition hover:bg-slate-100"
+      title="Agenda"
+      aria-label="Agenda"
+      routerLinkActive="active"
+      ariaCurrentWhenActive="page"
+      (click)="fechar.emit()"
+      ><svg viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="3" y="5" width="18" height="16" rx="2" />
+        <path d="M7 3v4M17 3v4M3 11h18M7 15h3M14 15h3" /></svg
+      ><span class="nav-label">Agenda</span></a
     >
-      <span>▣</span>
-      Agenda
-    </a>
-
     <a
       routerLink="/pacientes"
-      routerLinkActive="bg-blue-50 text-blue-600"
-      class="flex items-center gap-3 rounded-xl px-4 py-3 font-medium text-slate-600 transition hover:bg-slate-100"
+      title="Pacientes"
+      aria-label="Pacientes"
+      routerLinkActive="active"
+      ariaCurrentWhenActive="page"
+      (click)="fechar.emit()"
+      ><svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="9" cy="8" r="3" />
+        <path d="M3 21v-3a6 6 0 0 1 12 0v3M16 5a3 3 0 0 1 0 6M18 15a5 5 0 0 1 3 5" /></svg
+      ><span class="nav-label">Pacientes</span></a
     >
-      <span>♙</span>
-      Pacientes
-    </a>
   </nav>
-
-  <div class="border-t border-slate-200 pt-4">
-    <p class="px-4 text-xs text-slate-400">AgendaCare</p>
+  <div class="sidebar-footer">
+    <span class="footer-dot" aria-hidden="true"></span>Mais organização.<br />Mais tempo para
+    cuidar.
   </div>
 </aside>
