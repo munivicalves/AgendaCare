@@ -40,6 +40,14 @@ export class AgendamentoService {
     return this.http.patch<Agendamento>(`${this.apiUrl}/${id}/confirmar`, {});
   }
 
+  concluir(id: number): Observable<Agendamento> {
+    return this.http.patch<Agendamento>(`${this.apiUrl}/${id}/concluir`, {});
+  }
+
+  registrarFalta(id: number): Observable<Agendamento> {
+    return this.http.patch<Agendamento>(`${this.apiUrl}/${id}/falta`, {});
+  }
+
   cancelar(id: number): Observable<Agendamento> {
     return this.http.patch<Agendamento>(`${this.apiUrl}/${id}/cancelar`, {});
   }

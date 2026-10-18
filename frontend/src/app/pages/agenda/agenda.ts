@@ -20,6 +20,7 @@ export class Agenda implements OnInit {
   cancelando = signal(false);
   sucesso = signal('');
   confirmandoId = signal<number | null>(null);
+  alterandoStatusId = signal<number | null>(null);
 
   dataSelecionada = this.obterDataAtual();
 
@@ -192,5 +193,71 @@ export class Agenda implements OnInit {
         this.confirmandoId.set(null);
       },
     });
+  }
+  concluirAgendamento(agendamento: Agendamento): void {
+    if (agendamento.status !== 'CONFIRMADO' || this.alterandoStatusId() !== null) {
+      return;
+    }
+
+    this.alterandoStatusId.set(agendamento.id);
+    this.erro.set('');
+    this.sucesso.set('');
+
+    this.agendamentoService.concluir(agendamento.id).subscribe({
+      next: (atualizado) => {
+        this.agendamentos.update((agendamentos) =>
+          agendamentos.map((item) => (item.id === atualizado.id ? atualizado : item)),
+        );
+
+        this.alterandoStatusId.set(null);
+        this.sucesso.set(`Consulta de ${agendamento.pacienteNome} concluída com sucesso.`);
+      },
+
+      error: (erro) => {
+        console.error('Erro ao concluir consulta:', erro);
+
+        this.erro.set(erro.error?.mensagem || 'Não foi possível concluir a consulta.');
+
+        this.alterandoStatusId.set(null);
+      },
+    });
+  }
+
+  registrarFalta(agendamento: Agendamento): void {
+    if (
+      !['AGENDADO', 'CONFIRMADO'].includes(agendamento.status) ||
+      this.alterandoStatusId() !== null
+    ) {
+      return;
+    }
+
+    this.alterandoStatusId.set(agendamento.id);
+    this.erro.set('');
+    this.sucesso.set('');
+
+    this.agendamentoService.registrarFalta(agendamento.id).subscribe({
+      next: (atualizado) => {
+        this.agendamentos.update((agendamentos) =>
+          agendamentos.map((item) => (item.id === atualizado.id ? atualizado : item)),
+        );
+
+        this.alterandoStatusId.set(null);
+        this.sucesso.set(`Falta de ${agendamento.pacienteNome} registrada com sucesso.`);
+      },
+
+      error: (erro) => {
+        console.error('Erro ao registrar falta:', erro);
+
+        this.erro.set(erro.error?.mensagem || 'Não foi possível registrar a falta.');
+
+        this.alterandoStatusId.set(null);
+      },
+    });
+  }
+
+  consultaJaTerminou(agendamento: Agendamento): boolean {
+    const dataHoraFim = new Date(`${agendamento.data}T${agendamento.horaFim}`);
+
+    return Date.now() >= dataHoraFim.getTime();
   }
 }

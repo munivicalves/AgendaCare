@@ -13,6 +13,7 @@ import AgendaCare.dto.AgendamentoResponseDTO;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.time.LocalDateTime;
 
 @Service
 public class AgendamentoService {
@@ -54,12 +55,14 @@ public class AgendamentoService {
                 agendamento.setTipo(dto.tipo());
                 agendamento.setObservacoes(dto.observacoes());
 
-                if (dto.status() == null) {
-                        agendamento.setStatus(StatusAgendamento.AGENDADO);
-                } else {
-                        agendamento.setStatus(dto.status());
+                if (dto.status() != null
+                                && dto.status() != StatusAgendamento.AGENDADO) {
+
+                        throw new IllegalArgumentException(
+                                        "Novas consultas devem iniciar com status AGENDADO.");
                 }
 
+                agendamento.setStatus(StatusAgendamento.AGENDADO);
                 Agendamento salvo = agendamentoRepository.save(agendamento);
 
                 return new AgendamentoResponseDTO(salvo);
@@ -110,6 +113,21 @@ public class AgendamentoService {
 
                 Agendamento agendamento = buscarEntidadePorId(id);
 
+                if (agendamento.getStatus() == StatusAgendamento.CONCLUIDO
+                                || agendamento.getStatus() == StatusAgendamento.CANCELADO
+                                || agendamento.getStatus() == StatusAgendamento.FALTOU) {
+
+                        throw new IllegalArgumentException(
+                                        "Não é possível editar uma consulta finalizada ou cancelada.");
+                }
+
+                if (dto.status() != null
+                                && dto.status() != agendamento.getStatus()) {
+
+                        throw new IllegalArgumentException(
+                                        "O status não pode ser alterado pela edição. Utilize a operação específica.");
+                }
+
                 validarHorarios(dto);
 
                 Paciente paciente = buscarPaciente(dto.pacienteId());
@@ -133,10 +151,6 @@ public class AgendamentoService {
                 agendamento.setHoraFim(dto.horaFim());
                 agendamento.setTipo(dto.tipo());
                 agendamento.setObservacoes(dto.observacoes());
-
-                if (dto.status() != null) {
-                        agendamento.setStatus(dto.status());
-                }
 
                 Agendamento atualizado = agendamentoRepository.save(agendamento);
 
@@ -168,6 +182,8 @@ public class AgendamentoService {
                                         "Somente consultas confirmadas podem ser concluídas.");
                 }
 
+                validarHorarioEncerrado(agendamento);
+
                 agendamento.setStatus(StatusAgendamento.CONCLUIDO);
 
                 Agendamento concluido = agendamentoRepository.save(agendamento);
@@ -185,6 +201,8 @@ public class AgendamentoService {
                                         "Somente consultas agendadas ou confirmadas podem ser marcadas como falta.");
                 }
 
+                validarHorarioEncerrado(agendamento);
+
                 agendamento.setStatus(StatusAgendamento.FALTOU);
 
                 Agendamento atualizado = agendamentoRepository.save(agendamento);
@@ -196,14 +214,11 @@ public class AgendamentoService {
 
                 Agendamento agendamento = buscarEntidadePorId(id);
 
-                if (agendamento.getStatus() == StatusAgendamento.CANCELADO) {
-                        throw new IllegalArgumentException(
-                                        "Este agendamento já está cancelado.");
-                }
+                if (agendamento.getStatus() != StatusAgendamento.AGENDADO
+                                && agendamento.getStatus() != StatusAgendamento.CONFIRMADO) {
 
-                if (agendamento.getStatus() == StatusAgendamento.CONCLUIDO) {
                         throw new IllegalArgumentException(
-                                        "Não é possível cancelar um agendamento concluído.");
+                                        "Somente consultas agendadas ou confirmadas podem ser canceladas.");
                 }
 
                 agendamento.setStatus(StatusAgendamento.CANCELADO);
@@ -240,6 +255,20 @@ public class AgendamentoService {
                 if (!dto.horaFim().isAfter(dto.horaInicio())) {
                         throw new IllegalArgumentException(
                                         "O horário final deve ser posterior ao horário inicial.");
+                }
+        }
+
+        private void validarHorarioEncerrado(Agendamento agendamento) {
+
+                LocalDateTime fimConsulta = LocalDateTime.of(
+                                agendamento.getData(),
+                                agendamento.getHoraFim());
+
+                LocalDateTime agora = LocalDateTime.now();
+
+                if (agora.isBefore(fimConsulta)) {
+                        throw new IllegalArgumentException(
+                                        "Não é possível finalizar uma consulta antes do horário previsto para seu término.");
                 }
         }
 }
