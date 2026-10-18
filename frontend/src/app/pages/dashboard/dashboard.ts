@@ -16,19 +16,55 @@ export class Dashboard implements OnInit {
   totalPacientes = signal(0);
   agendamentos = signal<Agendamento[]>([]);
 
+  // Período selecionado para análise
+  periodoSelecionado = signal<'mes' | '3meses' | 'todos'>('mes');
+
+  // Agendamentos filtrados pelo período
+  agendamentosFiltrados = computed(() => {
+    const periodo = this.periodoSelecionado();
+    const agendamentos = this.agendamentos();
+
+    if (periodo === 'todos') {
+      return agendamentos;
+    }
+
+    const hoje = new Date();
+
+    const inicio =
+      periodo === 'mes'
+        ? new Date(hoje.getFullYear(), hoje.getMonth(), 1)
+        : new Date(hoje.getFullYear(), hoje.getMonth() - 2, 1);
+
+    const ano = inicio.getFullYear();
+    const mes = String(inicio.getMonth() + 1).padStart(2, '0');
+    const dia = String(inicio.getDate()).padStart(2, '0');
+
+    const dataInicial = `${ano}-${mes}-${dia}`;
+    const dataFinal = this.obterDataAtual();
+
+    return agendamentos.filter(
+      (agendamento) => agendamento.data >= dataInicial && agendamento.data <= dataFinal,
+    );
+  });
+
   // Total de consultas concluídas
   totalConcluidas = computed(
-    () => this.agendamentos().filter((agendamento) => agendamento.status === 'CONCLUIDO').length,
+    () =>
+      this.agendamentosFiltrados().filter((agendamento) => agendamento.status === 'CONCLUIDO')
+        .length,
   );
 
   // Total de faltas registradas
   totalFaltas = computed(
-    () => this.agendamentos().filter((agendamento) => agendamento.status === 'FALTOU').length,
+    () =>
+      this.agendamentosFiltrados().filter((agendamento) => agendamento.status === 'FALTOU').length,
   );
 
   // Total de consultas canceladas
   totalCanceladas = computed(
-    () => this.agendamentos().filter((agendamento) => agendamento.status === 'CANCELADO').length,
+    () =>
+      this.agendamentosFiltrados().filter((agendamento) => agendamento.status === 'CANCELADO')
+        .length,
   );
 
   // Percentual de comparecimento
@@ -45,17 +81,49 @@ export class Dashboard implements OnInit {
     return (concluidas / total) * 100;
   });
 
+  // Distribuição de atendimentos por status
+  distribuicaoStatus = computed(() => [
+    {
+      nome: 'Concluídas',
+      total: this.totalConcluidas(),
+      cor: 'bg-green-500',
+    },
+    {
+      nome: 'Faltas',
+      total: this.totalFaltas(),
+      cor: 'bg-orange-500',
+    },
+    {
+      nome: 'Canceladas',
+      total: this.totalCanceladas(),
+      cor: 'bg-red-500',
+    },
+  ]);
+
+  // Maior valor utilizado para dimensionar as barras
+  maiorQuantidadeStatus = computed(() =>
+    Math.max(1, ...this.distribuicaoStatus().map((item) => item.total)),
+  );
+
   atendimentosPorMes = computed(() => {
     const hoje = new Date();
 
-    return Array.from({ length: 6 }, (_, indice) => {
-      const data = new Date(hoje.getFullYear(), hoje.getMonth() - (5 - indice), 1);
+    const periodo = this.periodoSelecionado();
+
+    const quantidadeMeses = periodo === 'mes' ? 1 : periodo === '3meses' ? 3 : 6;
+
+    return Array.from({ length: quantidadeMeses }, (_, indice) => {
+      const data = new Date(
+        hoje.getFullYear(),
+        hoje.getMonth() - (quantidadeMeses - 1 - indice),
+        1,
+      );
 
       const ano = data.getFullYear();
       const mes = String(data.getMonth() + 1).padStart(2, '0');
       const referencia = `${ano}-${mes}`;
 
-      const total = this.agendamentos().filter((agendamento) =>
+      const total = this.agendamentosFiltrados().filter((agendamento) =>
         agendamento.data.startsWith(referencia),
       ).length;
 
