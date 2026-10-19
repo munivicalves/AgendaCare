@@ -1,3 +1,4 @@
+import { TelefoneBrasileiroPipe } from '../../shared/pipes/telefone-brasileiro';
 import { Component, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
@@ -10,7 +11,7 @@ import { Agendamento } from '../../models/agendamento';
 
 @Component({
   selector: 'app-paciente-detalhes',
-  imports: [RouterLink],
+  imports: [TelefoneBrasileiroPipe, RouterLink],
   templateUrl: './paciente-detalhes.html',
   styleUrl: './paciente-detalhes.css',
 })

@@ -37,6 +37,7 @@ export class AgendamentoForm implements OnInit {
   salvando = signal(false);
   erro = signal('');
   modoEdicao = signal(false);
+  readonly edicaoCarregada = signal(false);
 
   agendamentoId: number | null = null;
   statusAtual: StatusAgendamento = 'AGENDADO';
@@ -56,7 +57,15 @@ export class AgendamentoForm implements OnInit {
         data: ['', [Validators.required]],
         horaInicio: ['', [Validators.required]],
         horaFim: ['', [Validators.required]],
-        tipo: ['', [Validators.required, Validators.minLength(3)]],
+        tipo: [
+          '',
+          [
+            Validators.required,
+            Validators.minLength(3),
+            (control: AbstractControl) =>
+              control.value.trim().length >= 3 ? null : { minlength: true },
+          ],
+        ],
         observacoes: [''],
       },
       {
@@ -71,6 +80,7 @@ export class AgendamentoForm implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
 
     if (id !== null) {
+      this.modoEdicao.set(true);
       const idNumerico = Number(id);
 
       if (!Number.isSafeInteger(idNumerico) || idNumerico <= 0) {
@@ -103,12 +113,14 @@ export class AgendamentoForm implements OnInit {
   carregarAgendamento(): void {
     if (this.agendamentoId === null) return;
 
+    this.edicaoCarregada.set(false);
     this.carregandoAgendamento.set(true);
     this.erro.set('');
 
     this.agendamentoService.buscarPorId(this.agendamentoId).subscribe({
       next: (agendamento) => {
         this.statusAtual = agendamento.status;
+        this.edicaoCarregada.set(true);
 
         this.form.patchValue({
           pacienteId: agendamento.pacienteId,
@@ -136,7 +148,7 @@ export class AgendamentoForm implements OnInit {
       this.salvando() ||
       this.carregandoPacientes() ||
       this.carregandoAgendamento() ||
-      (this.modoEdicao() && this.agendamentoId === null)
+      (this.modoEdicao() && (this.agendamentoId === null || !this.edicaoCarregada()))
     ) {
       this.form.markAllAsTouched();
       return;

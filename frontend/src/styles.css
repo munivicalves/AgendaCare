@@ -1,8 +1,46 @@
 @import 'tailwindcss';
 
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/InterVariable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --ac-brand: #12685e;
+  --ac-brand-dark: #124b46;
+  --ac-mint: #d9eee5;
+  --ac-canvas: #f1f6f4;
+  --ac-border: #dce7e1;
+  --ac-text: #193b35;
+  --ac-muted: #5c706a;
+  --ac-sidebar-width: 264px;
+  --ac-rail-width: 84px;
+}
+
+/* Explicitly align the document and Material typography outside cascade layers. */
+html,
+body {
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+}
+body {
+  background: var(--ac-canvas);
+  color: var(--ac-text);
+  font-size: 15px;
+  line-height: 1.6;
+}
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
 /* Shared brand tokens keep the existing Tailwind templates consistent. */
 @theme {
-  --font-sans: 'Segoe UI', Roboto, Arial, sans-serif;
+  --font-sans: 'Inter', 'Segoe UI', Arial, sans-serif;
   --color-blue-50: #effaf7;
   --color-blue-100: #d5f1e9;
   --color-blue-200: #abe0d2;

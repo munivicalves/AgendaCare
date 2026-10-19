@@ -2,15 +2,272 @@
   display: block;
   min-width: 0;
 }
-.monthly-chart > div {
+.dashboard-heading button {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+.refresh-icon {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.dashboard h1 {
+  color: #163f36;
+}
+.dashboard h2 {
+  color: #214b40;
+  font-size: 18px;
+}
+.dashboard .text-xs {
+  font-size: 13px;
+}
+.metric-card,
+.chart-panel,
+.upcoming-panel,
+.quick-actions {
+  border-color: var(--ac-border);
+  border-radius: 20px;
+}
+.metric-card {
+  position: relative;
+  overflow: hidden;
+  padding: 24px;
+}
+.summary-grid .metric-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg, #168576, #a6d8c0);
+}
+.metric-card > .flex {
+  gap: 12px;
+}
+.metric-card .text-3xl {
+  font-size: clamp(30px, 3vw, 38px);
+  line-height: 1.15;
+  font-weight: 650;
+  letter-spacing: -1.5px;
+  color: #173e34;
+  font-variant-numeric: tabular-nums;
+}
+.metric-card > p:last-child {
+  font-size: 13px;
+  line-height: 1.6;
+}
+.indicator-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  background: #e4f3eb;
+  border: 1px solid #d3e9dc;
+  border-radius: 13px;
+}
+.summary-grid .indicator-icon {
+  background: #195f52;
+  border-color: #195f52;
+}
+.summary-grid .metric-icon {
+  color: #e5f7ed;
+}
+.tone-orange {
+  background: #fff4e6;
+  border-color: #f5e4ca;
+}
+.tone-orange .metric-icon {
+  color: #9b5a17;
+}
+.tone-red {
+  background: #fcf0ef;
+  border-color: #f1dcda;
+}
+.tone-red .metric-icon {
+  color: #b0474c;
+}
+.performance-section > div:first-child > div {
+  flex-wrap: wrap;
+}
+.period-filter {
+  flex-shrink: 0;
+  box-shadow: none;
+  background: #e5eee8;
+  border-color: #dce6df;
+}
+.period-filter button {
+  border-radius: 9px;
+}
+.period-filter button[aria-pressed='true'] {
+  background: #fff;
+  color: #195f52;
+  box-shadow: 0 2px 5px #1c493317;
+}
+.charts-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 24px;
+}
+.chart-panel {
   min-width: 0;
 }
+.chart-legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  color: #526c60;
+  font-size: 13px;
+}
+.chart-legend span {
+  width: 9px;
+  height: 9px;
+  background: #21846c;
+  border-radius: 50%;
+}
+.monthly-chart {
+  display: flex;
+  gap: 12px;
+  padding-top: 20px;
+  background: repeating-linear-gradient(
+    to top,
+    transparent 0,
+    transparent 59px,
+    #e7eee9 59px,
+    #e7eee9 60px
+  );
+  border-bottom: 1px solid #dce8e1;
+}
+.month-column {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+}
+.month-track {
+  height: 220px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.month-bar {
+  position: relative;
+  width: 65%;
+  max-width: 64px;
+  flex-shrink: 0;
+  background: linear-gradient(180deg, #228f76, #b0deca);
+  border-radius: 9px 9px 0 0;
+}
+.month-value {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  color: #245647;
+  font-size: 14px;
+  font-weight: 650;
+}
+.month-label {
+  display: block;
+  padding: 12px 0;
+  color: #5c706a;
+  font-size: 13px;
+  text-transform: capitalize;
+  background: #fff;
+}
+.status-track {
+  height: 12px;
+  border-radius: 8px;
+  background: #f0f4f1;
+  overflow: hidden;
+}
+.status-bar.bg-green-500 {
+  background: #25876c;
+}
+.status-bar.bg-orange-500 {
+  background: #d4a458;
+}
+.status-bar.bg-red-500 {
+  background: #be7474;
+}
+.appointment-row {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 0;
+  border-top: 1px solid #e8eeea;
+}
+.appointment-time {
+  display: grid;
+  place-items: center;
+  height: 52px;
+  background: #e9f4ed;
+  border: 1px solid #dbebe1;
+  border-radius: 13px;
+  color: #236250;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+.appointment-status {
+  font-size: 12px;
+  white-space: nowrap;
+}
+.quick-actions {
+  background: linear-gradient(145deg, #eef7f1, #fff);
+  align-self: start;
+}
+.quick-actions a {
+  display: flex;
+  align-items: center;
+  min-height: 50px;
+}
+.empty-appointments {
+  border: 1px dashed #d6e5db;
+  border-radius: 14px;
+  background: #f8fbf9;
+  padding-inline: 16px;
+}
+@media (max-width: 1199px) {
+  .charts-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
 @media (max-width: 639px) {
+  .summary-grid,
+  .performance-grid {
+    gap: 14px;
+  }
+  .dashboard-heading button {
+    width: 100%;
+    justify-content: center;
+  }
+  .performance-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .period-filter {
+    gap: 4px;
+  }
+  .period-filter button {
+    flex-basis: 100%;
+    font-size: 14px;
+  }
+  .month-track {
+    height: 190px;
+  }
   .monthly-chart {
     gap: 6px;
-    height: 220px;
   }
-  .monthly-chart span {
-    font-size: 11px;
+  .appointment-row {
+    grid-template-columns: 56px minmax(0, 1fr);
+    gap: 12px;
+  }
+  .appointment-status {
+    grid-column: 2;
+    justify-self: start;
   }
 }

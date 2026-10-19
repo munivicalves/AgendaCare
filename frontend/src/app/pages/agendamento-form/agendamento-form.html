@@ -47,6 +47,8 @@
       <select
         id="pacienteId"
         formControlName="pacienteId"
+        [attr.aria-invalid]="form.controls.pacienteId.touched && form.controls.pacienteId.invalid"
+        aria-describedby="pacienteId-feedback"
         class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
       >
         <option [ngValue]="0">Selecione um paciente</option>
@@ -58,9 +60,11 @@
         }
       </select>
 
-      @if (form.controls.pacienteId.touched && form.controls.pacienteId.invalid) {
-        <p class="mt-1 text-sm text-red-500">Selecione um paciente.</p>
-      }
+      <div id="pacienteId-feedback" aria-live="polite">
+        @if (form.controls.pacienteId.touched && form.controls.pacienteId.invalid) {
+          <p class="mt-1 text-sm text-red-500">Selecione um paciente.</p>
+        }
+      </div>
 
       @if (carregandoPacientes()) {
         <p class="mt-2 text-sm text-slate-400">Carregando pacientes...</p>
@@ -84,12 +88,16 @@
         id="data"
         type="date"
         formControlName="data"
+        [attr.aria-invalid]="form.controls.data.touched && form.controls.data.invalid"
+        aria-describedby="data-feedback"
         class="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
       />
 
-      @if (form.controls.data.touched && form.controls.data.invalid) {
-        <p class="mt-1 text-sm text-red-500">Informe a data da consulta.</p>
-      }
+      <div id="data-feedback" aria-live="polite">
+        @if (form.controls.data.touched && form.controls.data.invalid) {
+          <p class="mt-1 text-sm text-red-500">Informe a data da consulta.</p>
+        }
+      </div>
     </div>
 
     <!-- Horários -->
@@ -103,12 +111,16 @@
           id="horaInicio"
           type="time"
           formControlName="horaInicio"
+          [attr.aria-invalid]="form.controls.horaInicio.touched && form.controls.horaInicio.invalid"
+          aria-describedby="horaInicio-feedback"
           class="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
         />
 
-        @if (form.controls.horaInicio.touched && form.controls.horaInicio.invalid) {
-          <p class="mt-1 text-sm text-red-500">Informe o horário inicial.</p>
-        }
+        <div id="horaInicio-feedback" aria-live="polite">
+          @if (form.controls.horaInicio.touched && form.controls.horaInicio.invalid) {
+            <p class="mt-1 text-sm text-red-500">Informe o horário inicial.</p>
+          }
+        </div>
       </div>
 
       <div>
@@ -120,12 +132,21 @@
           id="horaFim"
           type="time"
           formControlName="horaFim"
+          [attr.aria-describedby]="
+            form.hasError('horarioInvalido')
+              ? 'horaFim-feedback intervalo-feedback'
+              : 'horaFim-feedback'
+          "
+          [attr.aria-invalid]="form.controls.horaFim.touched && form.controls.horaFim.invalid"
+          aria-describedby="horaFim-feedback"
           class="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
         />
 
-        @if (form.controls.horaFim.touched && form.controls.horaFim.invalid) {
-          <p class="mt-1 text-sm text-red-500">Informe o horário final.</p>
-        }
+        <div id="horaFim-feedback" aria-live="polite">
+          @if (form.controls.horaFim.touched && form.controls.horaFim.invalid) {
+            <p class="mt-1 text-sm text-red-500">Informe o horário final.</p>
+          }
+        </div>
       </div>
     </div>
 
@@ -133,7 +154,9 @@
       form.hasError('horarioInvalido') &&
       (form.controls.horaInicio.touched || form.controls.horaFim.touched)
     ) {
-      <p class="text-sm text-red-500">O horário final deve ser posterior ao horário inicial.</p>
+      <p id="intervalo-feedback" role="alert" class="text-sm text-red-500">
+        O horário final deve ser posterior ao horário inicial.
+      </p>
     }
 
     <!-- Tipo -->
@@ -146,15 +169,19 @@
         id="tipo"
         type="text"
         formControlName="tipo"
+        [attr.aria-invalid]="form.controls.tipo.touched && form.controls.tipo.invalid"
+        aria-describedby="tipo-feedback"
         placeholder="Ex.: Consulta inicial, retorno, avaliação..."
         class="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
       />
 
-      @if (form.controls.tipo.touched && form.controls.tipo.invalid) {
-        <p class="mt-1 text-sm text-red-500">
-          Informe o tipo de atendimento com pelo menos 3 caracteres.
-        </p>
-      }
+      <div id="tipo-feedback" aria-live="polite">
+        @if (form.controls.tipo.touched && form.controls.tipo.invalid) {
+          <p class="mt-1 text-sm text-red-500">
+            Informe o tipo de atendimento com pelo menos 3 caracteres.
+          </p>
+        }
+      </div>
     </div>
 
     <!-- Observações -->
@@ -185,7 +212,12 @@
 
       <button
         type="submit"
-        [disabled]="salvando() || carregandoPacientes() || carregandoAgendamento()"
+        [disabled]="
+          salvando() ||
+          carregandoPacientes() ||
+          carregandoAgendamento() ||
+          (modoEdicao() && !edicaoCarregada())
+        "
         class="rounded-xl bg-blue-600 px-6 py-3 font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
       >
         @if (salvando()) {

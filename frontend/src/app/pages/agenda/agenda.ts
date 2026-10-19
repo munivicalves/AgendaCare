@@ -1,5 +1,6 @@
+import { Subscription } from 'rxjs';
 import { A11yModule } from '@angular/cdk/a11y';
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { AgendamentoService } from '../../core/services/agendamento';
@@ -13,7 +14,16 @@ import { DatePipe } from '@angular/common';
   templateUrl: './agenda.html',
   styleUrl: './agenda.css',
 })
-export class Agenda implements OnInit {
+export class Agenda implements OnInit, OnDestroy {
+  private buscaDoDia?: Subscription;
+  readonly falhaCarregamento = signal(false);
+  readonly acaoEmAndamento = computed(
+    () => this.confirmandoId() !== null || this.alterandoStatusId() !== null || this.cancelando(),
+  );
+
+  ngOnDestroy(): void {
+    this.buscaDoDia?.unsubscribe();
+  }
   agendamentos = signal<Agendamento[]>([]);
   carregando = signal(false);
   erro = signal('');
@@ -135,10 +145,12 @@ export class Agenda implements OnInit {
   }
 
   carregarAgendamentos(): void {
+    this.buscaDoDia?.unsubscribe();
+    this.falhaCarregamento.set(false);
     this.carregando.set(true);
     this.erro.set('');
 
-    this.agendamentoService.listarPorData(this.dataSelecionada).subscribe({
+    this.buscaDoDia = this.agendamentoService.listarPorData(this.dataSelecionada).subscribe({
       next: (agendamentos) => {
         this.agendamentos.set(agendamentos);
         this.carregando.set(false);
@@ -147,6 +159,7 @@ export class Agenda implements OnInit {
       error: (erro) => {
         console.error('Erro ao carregar agendamentos:', erro);
 
+        this.falhaCarregamento.set(true);
         this.erro.set('Não foi possível carregar os agendamentos.');
         this.carregando.set(false);
       },

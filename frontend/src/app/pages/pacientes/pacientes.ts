@@ -1,3 +1,4 @@
+import { TelefoneBrasileiroPipe } from '../../shared/pipes/telefone-brasileiro';
 import { A11yModule } from '@angular/cdk/a11y';
 import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -8,7 +9,7 @@ import { Paciente } from '../../models/paciente';
 
 @Component({
   selector: 'app-pacientes',
-  imports: [A11yModule, FormsModule, RouterLink],
+  imports: [TelefoneBrasileiroPipe, A11yModule, FormsModule, RouterLink],
   templateUrl: './pacientes.html',
   styleUrl: './pacientes.css',
 })

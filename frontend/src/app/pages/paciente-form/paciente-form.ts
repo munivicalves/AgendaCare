@@ -1,3 +1,4 @@
+import { formatarTelefoneBrasileiro } from '../../shared/pipes/telefone-brasileiro';
 import { Component, OnInit, signal } from '@angular/core';
 import {
   AbstractControl,
@@ -43,6 +44,7 @@ export class PacienteForm implements OnInit {
   modoEdicao = signal(false);
 
   pacienteId: number | null = null;
+  private telefoneOriginal: string | null = null;
 
   form;
 
@@ -53,7 +55,14 @@ export class PacienteForm implements OnInit {
     private route: ActivatedRoute,
   ) {
     this.form = this.fb.nonNullable.group({
-      nome: ['', [Validators.required, Validators.minLength(3)]],
+      nome: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(3),
+          (control: AbstractControl) => (control.value?.trim() ? null : { required: true }),
+        ],
+      ],
 
       email: ['', [Validators.email]],
 
@@ -86,10 +95,11 @@ export class PacienteForm implements OnInit {
 
     this.pacienteService.buscarPorId(this.pacienteId).subscribe({
       next: (paciente) => {
+        this.telefoneOriginal = paciente.telefone;
         this.form.patchValue({
           nome: paciente.nome,
           email: paciente.email ?? '',
-          telefone: paciente.telefone ?? '',
+          telefone: formatarTelefoneBrasileiro(paciente.telefone).replace(/^\+55 /, ''),
           dataNascimento: paciente.dataNascimento ?? '',
           observacoes: paciente.observacoes ?? '',
         });
@@ -100,7 +110,7 @@ export class PacienteForm implements OnInit {
       error: (erro) => {
         console.error('Erro ao carregar paciente:', erro);
 
-        this.erro.set('Não foi possível carregar os dados do paciente.');
+        this.erro.set('NÃ£o foi possÃ­vel carregar os dados do paciente.');
 
         this.carregando.set(false);
       },
@@ -110,27 +120,25 @@ export class PacienteForm implements OnInit {
   formatarTelefone(event: Event): void {
     const input = event.target as HTMLInputElement;
 
-    let valor = input.value.replace(/\D/g, '');
-
-    valor = valor.substring(0, 11);
-
-    if (valor.length > 0) {
-      valor = `(${valor}`;
+    let digitos = input.value.replace(/\D/g, '');
+    if ((digitos.length === 12 || digitos.length === 13) && digitos.startsWith('55')) {
+      digitos = digitos.slice(2);
     }
-
-    if (valor.length > 3) {
-      valor = valor.substring(0, 3) + ') ' + valor.substring(3);
+    if (digitos.length > 11) {
+      this.form.controls.telefone.setValue(input.value, { emitEvent: false });
+      return;
     }
-
-    if (valor.length > 10) {
-      valor = valor.substring(0, 10) + '-' + valor.substring(10, 14);
-    } else if (valor.length > 9) {
-      valor = valor.substring(0, 9) + '-' + valor.substring(9, 13);
+    let valor = digitos;
+    if (digitos.length > 6) {
+      const corte = digitos.length > 10 ? 7 : 6;
+      valor = `(${digitos.slice(0, 2)}) ${digitos.slice(2, corte)}-${digitos.slice(corte)}`;
+    } else if (digitos.length > 2) {
+      valor = `(${digitos.slice(0, 2)}) ${digitos.slice(2)}`;
+    } else if (digitos.length) {
+      valor = `(${digitos}`;
     }
-
-    this.form.controls.telefone.setValue(valor, {
-      emitEvent: false,
-    });
+    input.value = valor;
+    this.form.controls.telefone.setValue(valor, { emitEvent: false });
   }
 
   salvar(): void {
@@ -149,7 +157,12 @@ export class PacienteForm implements OnInit {
 
       email: dados.email.trim() || null,
 
-      telefone: dados.telefone.trim() || null,
+      // Preserve the stored representation when the displayed number was not changed.
+      telefone:
+        this.modoEdicao() &&
+        dados.telefone === formatarTelefoneBrasileiro(this.telefoneOriginal).replace(/^\+55 /, '')
+          ? this.telefoneOriginal
+          : dados.telefone.trim() || null,
 
       dataNascimento: dados.dataNascimento || null,
 
@@ -167,7 +180,7 @@ export class PacienteForm implements OnInit {
         error: (erro) => {
           console.error('Erro ao atualizar paciente:', erro);
 
-          this.erro.set('Não foi possível atualizar o paciente.');
+          this.erro.set('NÃ£o foi possÃ­vel atualizar o paciente.');
 
           this.salvando.set(false);
         },
@@ -186,7 +199,7 @@ export class PacienteForm implements OnInit {
       error: (erro) => {
         console.error('Erro ao cadastrar paciente:', erro);
 
-        this.erro.set('Não foi possível cadastrar o paciente.');
+        this.erro.set('NÃ£o foi possÃ­vel cadastrar o paciente.');
 
         this.salvando.set(false);
       },

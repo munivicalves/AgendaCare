@@ -5,36 +5,70 @@
   z-index: 20;
 }
 .topbar {
-  height: 80px;
-  padding-inline: clamp(20px, 3vw, 44px);
+  min-height: 88px;
+  padding: 16px clamp(20px, 2.5vw, 40px);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  background: rgb(255 255 255 / 96%);
-  border-bottom: 1px solid #e2e8f0;
+  background: #f1f6f4f5;
+  border-bottom: 1px solid var(--ac-border);
+  backdrop-filter: blur(12px);
 }
-.profile-avatar {
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 14px;
-  background: #e0f2f1;
-  color: #0f6562;
-  font-weight: 700;
+.header-leading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.header-eyebrow {
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.13em;
+  color: var(--ac-muted);
+  margin-bottom: 3px;
+}
+.header-title {
+  color: var(--ac-text);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.4px;
+}
+.header-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 16px;
+  min-height: 44px;
+  flex-shrink: 0;
+  background: var(--ac-brand-dark);
+  color: #fff;
+  border: 1px solid #124b46;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 550;
+  box-shadow: 0 3px 8px #124b4612;
+  transition: background 0.15s;
+}
+.header-action:hover {
+  background: #1c6c60;
 }
 .menu-toggle {
   display: none;
   width: 44px;
   height: 44px;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  border: 1px solid #dce5e8;
+  border: 1px solid var(--ac-border);
+  background: #fff;
   border-radius: 12px;
+  color: var(--ac-brand-dark);
 }
 svg {
-  width: 22px;
+  width: 20px;
+  height: 20px;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.8;
@@ -44,7 +78,28 @@ svg {
   .menu-toggle {
     display: flex;
   }
+}
+@media (max-width: 639px) {
   .topbar {
-    height: 72px;
+    min-height: 76px;
+    padding-inline: 16px;
+    gap: 8px;
+  }
+  .header-eyebrow {
+    font-size: 10px;
+  }
+  .header-title {
+    font-size: 14px;
+  }
+  .header-action {
+    width: 44px;
+    padding: 10px;
+  }
+  .header-action span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
   }
 }

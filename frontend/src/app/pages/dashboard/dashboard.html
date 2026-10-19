@@ -1,6 +1,6 @@
-<div class="space-y-8">
+<div class="dashboard space-y-8" [attr.aria-busy]="carregando()">
   <!-- Cabeçalho -->
-  <section class="flex flex-wrap items-center justify-between gap-4">
+  <section class="dashboard-heading flex flex-wrap items-center justify-between gap-4">
     <div>
       <p class="page-eyebrow">AgendaCare / Visão geral</p>
       <h1 class="text-3xl font-bold text-slate-800">Dashboard</h1>
@@ -13,7 +13,10 @@
       [disabled]="carregando()"
       class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-blue-600 transition hover:bg-slate-50 disabled:opacity-50"
     >
-      Atualizar dados
+      <svg class="refresh-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M20 7v5h-5M4 17v-5h5M6 7a7 7 0 0 1 12-1l2 3M4 15l2 3a7 7 0 0 0 12-1" />
+      </svg>
+      {{ carregando() ? 'Atualizando...' : 'Atualizar dados' }}
     </button>
   </section>
 
@@ -24,15 +27,15 @@
   }
 
   @if (carregando()) {
-    <div class="rounded-xl bg-blue-50 p-4 text-sm text-blue-600">
+    <div role="status" class="rounded-xl bg-blue-50 p-4 text-sm text-blue-600">
       Carregando informações do Dashboard...
     </div>
   }
 
   <!-- Indicadores -->
-  <section class="grid gap-5 md:grid-cols-3">
+  <section aria-label="Resumo da agenda" class="summary-grid grid gap-5 md:grid-cols-3">
     <!-- Atendimentos hoje -->
-    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div class="metric-card rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
       <div class="flex items-start justify-between">
         <div>
           <p class="text-sm font-medium text-slate-500">Atendimentos hoje</p>
@@ -42,7 +45,7 @@
           </p>
         </div>
 
-        <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-xl">
+        <div class="indicator-icon">
           <span class="metric-icon" aria-hidden="true"
             ><svg viewBox="0 0 24 24">
               <rect x="3" y="5" width="18" height="16" rx="2" />
@@ -55,7 +58,7 @@
     </div>
 
     <!-- Pacientes -->
-    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div class="metric-card rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
       <div class="flex items-start justify-between">
         <div>
           <p class="text-sm font-medium text-slate-500">Pacientes cadastrados</p>
@@ -65,7 +68,7 @@
           </p>
         </div>
 
-        <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-xl">
+        <div class="indicator-icon">
           <span class="metric-icon" aria-hidden="true"
             ><svg viewBox="0 0 24 24">
               <circle cx="9" cy="8" r="3" />
@@ -78,7 +81,7 @@
     </div>
 
     <!-- Próximo atendimento -->
-    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div class="metric-card rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
       <div class="flex items-start justify-between">
         <div>
           <p class="text-sm font-medium text-slate-500">Próximo atendimento</p>
@@ -102,7 +105,7 @@
           }
         </div>
 
-        <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-50 text-xl">
+        <div class="indicator-icon">
           <span class="metric-icon" aria-hidden="true"
             ><svg viewBox="0 0 24 24">
               <circle cx="12" cy="12" r="9" />
@@ -114,11 +117,13 @@
   </section>
 
   <!-- Indicadores de desempenho -->
-  <section class="space-y-4">
+  <section class="performance-section space-y-4" aria-labelledby="performance-title">
     <div>
       <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 class="text-lg font-semibold text-slate-800">Indicadores de desempenho</h2>
+          <h2 id="performance-title" class="text-lg font-semibold text-slate-800">
+            Indicadores de desempenho
+          </h2>
 
           <p class="mt-1 text-sm text-slate-500">
             Acompanhe os resultados dos atendimentos cadastrados.
@@ -127,7 +132,9 @@
 
         <!-- Filtro de período -->
         <div
-          class="segmented-control flex flex-wrap gap-1 rounded-xl border border-slate-200 bg-white p-1 shadow-sm"
+          role="group"
+          aria-label="Período dos indicadores e gráficos"
+          class="period-filter segmented-control flex flex-wrap gap-1 rounded-xl border border-slate-200 bg-white p-1 shadow-sm"
         >
           <button
             type="button"
@@ -165,13 +172,13 @@
       </div>
     </div>
 
-    <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+    <div class="performance-grid grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
       <!-- Consultas concluídas -->
-      <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div class="metric-card rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div class="flex items-start justify-between">
           <p class="text-sm font-medium text-slate-500">Consultas concluídas</p>
 
-          <div class="rounded-xl bg-green-50 p-3 text-xl">
+          <div class="indicator-icon tone-green">
             <span class="metric-icon" aria-hidden="true"
               ><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6" /></svg
             ></span>
@@ -186,11 +193,11 @@
       </div>
 
       <!-- Faltas -->
-      <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div class="metric-card rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div class="flex items-start justify-between">
           <p class="text-sm font-medium text-slate-500">Faltas registradas</p>
 
-          <div class="rounded-xl bg-orange-50 p-3 text-xl">
+          <div class="indicator-icon tone-orange">
             <span class="metric-icon" aria-hidden="true"
               ><svg viewBox="0 0 24 24"><path d="m12 3 10 18H2zM12 9v4M12 16h.01" /></svg
             ></span>
@@ -205,11 +212,11 @@
       </div>
 
       <!-- Cancelamentos -->
-      <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div class="metric-card rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div class="flex items-start justify-between">
           <p class="text-sm font-medium text-slate-500">Cancelamentos</p>
 
-          <div class="rounded-xl bg-red-50 p-3 text-xl">
+          <div class="indicator-icon tone-red">
             <span class="metric-icon" aria-hidden="true"
               ><svg viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6" /></svg
             ></span>
@@ -224,11 +231,11 @@
       </div>
 
       <!-- Taxa de comparecimento -->
-      <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div class="metric-card rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div class="flex items-start justify-between">
           <p class="text-sm font-medium text-slate-500">Taxa de comparecimento</p>
 
-          <div class="rounded-xl bg-blue-50 p-3 text-xl">
+          <div class="indicator-icon tone-blue">
             <span class="metric-icon" aria-hidden="true"
               ><svg viewBox="0 0 24 24"><path d="M3 3v18h18M6 15l5-5 4 3 6-8" /></svg
             ></span>
@@ -249,9 +256,9 @@
   </section>
 
   <!-- Gráficos do Dashboard -->
-  <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+  <div class="charts-grid">
     <!-- Gráfico de atendimentos mensais -->
-    <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <section class="chart-panel rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
       <div class="mb-6">
         <h2 class="text-lg font-semibold text-slate-800">Atendimentos por mês</h2>
 
@@ -266,27 +273,21 @@
         </p>
       </div>
 
-      <div
-        class="monthly-chart flex h-64 items-end justify-around gap-3 border-b border-slate-200 pb-2"
-      >
+      <div class="chart-legend"><span aria-hidden="true"></span>Consultas registradas</div>
+      <div class="monthly-chart" role="group" aria-label="Quantidade de consultas por mês">
         @for (mes of atendimentosPorMes(); track mes.referencia) {
-          <div class="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-2">
-            <span class="text-sm font-semibold text-slate-700">
-              {{ mes.total }}
-            </span>
-
-            <div
-              class="w-full max-w-20 rounded-t-lg bg-blue-500 transition-all duration-300"
-              [style.height.%]="(mes.total / maiorQuantidadeMensal()) * 85"
-              [class.bg-slate-200]="mes.total === 0"
-              [class.bg-blue-500]="mes.total > 0"
-              [attr.aria-label]="mes.nome + ': ' + mes.total + ' consultas'"
-              role="img"
-            ></div>
-
-            <span class="text-xs font-medium capitalize text-slate-500">
-              {{ mes.nome }}
-            </span>
+          <div class="month-column">
+            <div class="month-track">
+              <div
+                class="month-bar"
+                [style.height.%]="(mes.total / maiorQuantidadeMensal()) * 85"
+                role="img"
+                [attr.aria-label]="mes.nome + ': ' + mes.total + ' consultas'"
+              >
+                <span class="month-value" aria-hidden="true">{{ mes.total }}</span>
+              </div>
+            </div>
+            <span class="month-label">{{ mes.nome }}</span>
           </div>
         }
       </div>
@@ -297,7 +298,7 @@
     </section>
 
     <!-- Gráfico de atendimentos por status -->
-    <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <section class="chart-panel rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
       <div class="mb-6">
         <h2 class="text-lg font-semibold text-slate-800">Atendimentos por status</h2>
 
@@ -306,7 +307,7 @@
         </p>
       </div>
 
-      <div class="space-y-6">
+      <div class="status-distribution space-y-6">
         @for (item of distribuicaoStatus(); track item.nome) {
           <div>
             <div class="mb-2 flex items-center justify-between">
@@ -319,9 +320,13 @@
               </span>
             </div>
 
-            <div class="h-4 overflow-hidden rounded-full bg-slate-100">
+            <div
+              class="status-track"
+              role="img"
+              [attr.aria-label]="item.nome + ': ' + item.total + ' consultas'"
+            >
               <div
-                class="h-full rounded-full transition-all duration-300"
+                class="status-bar h-full rounded-full transition-all duration-300"
                 [class]="item.cor"
                 [style.width.%]="(item.total / maiorQuantidadeStatus()) * 100"
               ></div>
@@ -337,10 +342,12 @@
   </div>
 
   <!-- Conteúdo principal -->
-  <section class="grid gap-6 lg:grid-cols-3">
+  <section class="appointments-grid grid gap-6 lg:grid-cols-3">
     <!-- Próximos atendimentos -->
-    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2">
-      <div class="mb-6 flex items-center justify-between gap-3">
+    <div
+      class="upcoming-panel rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2"
+    >
+      <div class="panel-heading mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 class="text-lg font-semibold text-slate-800">Próximos atendimentos</h2>
 
@@ -354,13 +361,9 @@
 
       @if (proximosAtendimentos().length > 0) {
         @for (agendamento of proximosAtendimentos().slice(0, 5); track agendamento.id) {
-          <div
-            class="flex flex-wrap items-center gap-4 border-b border-slate-100 py-4 last:border-b-0"
-          >
+          <div class="appointment-row">
             <!-- Horário -->
-            <div
-              class="flex h-12 w-16 shrink-0 items-center justify-center rounded-xl bg-blue-50 font-semibold text-blue-600"
-            >
+            <div class="appointment-time">
               {{ agendamento.horaInicio.slice(0, 5) }}
             </div>
 
@@ -381,7 +384,7 @@
 
             <!-- Status -->
             <span
-              class="rounded-full px-3 py-1 text-xs font-medium"
+              class="appointment-status rounded-full px-3 py-1 text-xs font-medium"
               [class]="obterClasseStatus(agendamento.status)"
             >
               {{ obterTextoStatus(agendamento.status) }}
@@ -389,7 +392,7 @@
           </div>
         }
       } @else {
-        <div class="py-12 text-center">
+        <div class="empty-appointments py-12 text-center">
           <p class="font-medium text-slate-600">Nenhum atendimento futuro encontrado.</p>
 
           <p class="mt-2 text-sm text-slate-400">Cadastre uma nova consulta para começar.</p>
@@ -398,7 +401,7 @@
     </div>
 
     <!-- Ações rápidas -->
-    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div class="quick-actions rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
       <h2 class="text-lg font-semibold text-slate-800">Ações rápidas</h2>
 
       <p class="mb-6 text-sm text-slate-400">Acesse as principais funções</p>
