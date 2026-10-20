@@ -196,3 +196,28 @@ svg {
     display: none;
   }
 }
+
+.logout-button {
+  order: 6;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 44px;
+  padding: 12px;
+  color: #e2f1e9;
+  font-size: 13px;
+  border-radius: 10px;
+}
+.logout-button:hover {
+  background: #ffffff18;
+}
+@media (min-width: 1024px) {
+  .is-collapsed .logout-button {
+    justify-content: center;
+    padding-inline: 0;
+  }
+  .is-collapsed .logout-button span {
+    display: none;
+  }
+}

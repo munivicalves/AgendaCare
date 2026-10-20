@@ -1,13 +1,1 @@
-<a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
-<div class="app-shell" [class.sidebar-collapsed]="sidebarRecolhida()">
-  <app-sidebar
-    [aberto]="menuAberto()"
-    [recolhida]="sidebarRecolhida()"
-    (alternar)="alternarSidebar()"
-    (fechar)="fecharMenu()"
-  ></app-sidebar>
-  <div class="app-workspace" [attr.inert]="menuAberto() ? '' : null">
-    <app-header [menuAberto]="menuAberto()" (abrirMenu)="menuAberto.set(true)"></app-header>
-    <main id="conteudo" tabindex="-1"><router-outlet></router-outlet></main>
-  </div>
-</div>
+<router-outlet></router-outlet>

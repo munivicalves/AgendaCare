@@ -1,0 +1,22 @@
+.app-shell {
+  min-height: 100dvh;
+}
+.app-workspace {
+  margin-left: var(--ac-sidebar-width);
+  min-width: 0;
+  transition: margin-left 220ms ease;
+}
+main {
+  width: 100%;
+  padding: clamp(20px, 2.5vw, 40px);
+}
+@media (min-width: 1024px) {
+  .sidebar-collapsed .app-workspace {
+    margin-left: var(--ac-rail-width);
+  }
+}
+@media (max-width: 1023px) {
+  .app-workspace {
+    margin-left: 0;
+  }
+}

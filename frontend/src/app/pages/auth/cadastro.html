@@ -1,0 +1,105 @@
+<app-auth-frame>
+  <p class="auth-eyebrow">COMECE SUA JORNADA</p>
+  <h2>Crie sua conta</h2>
+  <p class="auth-description">Organize seus atendimentos com mais clareza e tranquilidade.</p>
+  @if (erro()) {
+    <p role="alert" class="auth-message">{{ erro() }}</p>
+  }
+  <form [formGroup]="form" (ngSubmit)="cadastrar()" [attr.aria-busy]="enviando()" novalidate>
+    <div>
+      <label for="cadastro-nome">Nome completo</label
+      ><input
+        id="cadastro-nome"
+        type="text"
+        formControlName="nome"
+        autocomplete="name"
+        maxlength="120"
+        placeholder="Como podemos chamar você?"
+        [attr.aria-invalid]="form.controls.nome.touched && form.controls.nome.invalid"
+        aria-describedby="cadastro-nome-error"
+      />
+      <div id="cadastro-nome-error" aria-live="polite">
+        @if (form.controls.nome.touched && form.controls.nome.invalid) {
+          <p class="field-error">Informe um nome com 2 a 120 caracteres.</p>
+        }
+      </div>
+    </div>
+    <div>
+      <label for="cadastro-email">E-mail</label
+      ><input
+        id="cadastro-email"
+        type="email"
+        formControlName="email"
+        autocomplete="username"
+        maxlength="254"
+        placeholder="voce@exemplo.com"
+        [attr.aria-invalid]="form.controls.email.touched && form.controls.email.invalid"
+        aria-describedby="cadastro-email-error"
+      />
+      <div id="cadastro-email-error" aria-live="polite">
+        @if (form.controls.email.touched && form.controls.email.invalid) {
+          <p class="field-error">Informe um e-mail válido.</p>
+        }
+      </div>
+    </div>
+    <div>
+      <label for="cadastro-senha">Senha</label>
+      <div class="password-field">
+        <input
+          id="cadastro-senha"
+          [type]="mostrarSenha() ? 'text' : 'password'"
+          formControlName="senha"
+          autocomplete="new-password"
+          maxlength="64"
+          placeholder="Crie uma senha segura"
+          [attr.aria-invalid]="form.controls.senha.touched && form.controls.senha.invalid"
+          aria-describedby="senha-hint cadastro-senha-error"
+        /><button
+          type="button"
+          class="password-toggle"
+          (click)="mostrarSenha.set(!mostrarSenha())"
+          [attr.aria-pressed]="mostrarSenha()"
+          [attr.aria-label]="mostrarSenha() ? 'Ocultar senha' : 'Mostrar senha'"
+        >
+          {{ mostrarSenha() ? 'Ocultar' : 'Mostrar' }}
+        </button>
+      </div>
+      <p id="senha-hint" class="field-hint">
+        Use 8 a 64 caracteres com maiúscula, minúscula, número e símbolo, até 72 bytes UTF-8.
+      </p>
+      <div id="cadastro-senha-error" aria-live="polite">
+        @if (form.controls.senha.touched && form.controls.senha.invalid) {
+          <p class="field-error">A senha precisa atender aos requisitos acima.</p>
+        }
+      </div>
+    </div>
+    <div>
+      <label for="cadastro-confirmacao">Confirmar senha</label
+      ><input
+        id="cadastro-confirmacao"
+        type="password"
+        formControlName="confirmacao"
+        autocomplete="new-password"
+        maxlength="64"
+        placeholder="Repita sua senha"
+        [attr.aria-invalid]="
+          form.controls.confirmacao.touched &&
+          (form.controls.confirmacao.invalid || form.hasError('senhasDiferentes'))
+        "
+        aria-describedby="cadastro-confirmacao-error"
+      />
+      <div id="cadastro-confirmacao-error" aria-live="polite">
+        @if (
+          form.controls.confirmacao.touched &&
+          (form.controls.confirmacao.invalid || form.hasError('senhasDiferentes'))
+        ) {
+          <p class="field-error">As senhas precisam ser iguais.</p>
+        }
+      </div>
+    </div>
+    <button type="submit" class="auth-submit" [disabled]="enviando()">
+      {{ enviando() ? 'Criando conta...' : 'Criar conta' }}
+    </button>
+  </form>
+  <p class="auth-switch">Já tem conta? <a routerLink="/login">Entrar</a></p>
+</app-auth-frame>

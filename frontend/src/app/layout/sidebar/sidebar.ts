@@ -13,6 +13,7 @@ export class Sidebar {
   readonly recolhida = input(false);
   readonly alternar = output<void>();
   readonly fechar = output<void>();
+  readonly sair = output<void>();
   readonly painel = viewChild<ElementRef<HTMLElement>>('painel');
   constructor() {
     effect(() => {

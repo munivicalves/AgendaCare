@@ -35,6 +35,15 @@ const appointments = ['AGENDADO', 'CONFIRMADO', 'CONCLUIDO', 'CANCELADO', 'FALTO
     createdAt: today,
   }),
 );
+// Fixture session is held in memory, just like a real login; never stored.
+const qaEncode = (value) => Buffer.from(JSON.stringify(value)).toString('base64url');
+const qaToken = `${qaEncode({ alg: 'HS256', typ: 'JWT' })}.${qaEncode({ sub: '7', exp: Math.floor(Date.now() / 1000) + 900 })}.qa-only-signature`;
+const qaSession = {
+  accessToken: qaToken,
+  tokenType: 'Bearer',
+  expiresIn: 900,
+  usuario: { id: 7, nome: 'Pessoa Teste', email: 'teste@example.com', createdAt: '2026-01-01' },
+};
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, 'http://localhost');
   const file = path.resolve(root, '.' + decodeURIComponent(url.pathname));
@@ -113,11 +122,14 @@ let browser, ws;
     if (msg.method === 'Fetch.requestPaused') {
       const { requestId, request } = msg.params;
       const url = new URL(request.url);
-      const body = url.pathname.includes('/pacientes')
-        ? [patient]
-        : /\/agendamentos\/\d+$/.test(url.pathname)
-          ? appointments[1]
-          : appointments;
+      const body =
+        url.pathname === '/api/auth/login'
+          ? qaSession
+          : url.pathname.includes('/pacientes')
+            ? [patient]
+            : /\/agendamentos\/\d+$/.test(url.pathname)
+              ? appointments[1]
+              : appointments;
       try {
         await send('Fetch.fulfillRequest', {
           requestId,
@@ -125,6 +137,11 @@ let browser, ws;
           responseHeaders: [
             { name: 'Content-Type', value: 'application/json' },
             { name: 'Access-Control-Allow-Origin', value: origin },
+            { name: 'Access-Control-Allow-Headers', value: 'Content-Type, Authorization' },
+            {
+              name: 'Access-Control-Allow-Methods',
+              value: 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
+            },
           ],
           body: Buffer.from(JSON.stringify(body)).toString('base64'),
         });
@@ -157,6 +174,19 @@ let browser, ws;
       const route =
         view === 'new' ? '/agenda/novo' : view === 'edit' ? '/agenda/2/editar' : '/agenda';
       await send('Page.navigate', { url: origin + route });
+      // A full page navigation intentionally drops the in-memory session.
+      let loginReady = false;
+      for (let i = 0; i < 100; i++) {
+        if (await evaluate(`Boolean(document.querySelector('#login-email'))`)) {
+          loginReady = true;
+          break;
+        }
+        await pause(100);
+      }
+      assert(loginReady, 'Expected authentication gate');
+      await evaluate(
+        `(() => { for(const [id,value] of Object.entries({'login-email':'teste@example.com','login-senha':'SenhaSegura!2026'})){const input=document.getElementById(id);input.value=value;input.dispatchEvent(new Event('input',{bubbles:true}));}document.querySelector('button[type="submit"]').click(); })()`,
+      );
       let ready = false;
       for (let i = 0; i < 100; i++) {
         if (

@@ -1,0 +1,19 @@
+<a class="skip-link" href="#formulario-auth">Pular para o formulário</a>
+<main class="auth-page">
+  <section class="auth-story" aria-label="AgendaCare, gestão de atendimentos">
+    <a routerLink="/login" class="auth-brand" aria-label="AgendaCare, entrar"
+      ><span class="brand-symbol" aria-hidden="true">+</span>AgendaCare</a
+    >
+    <div class="story-copy">
+      <p class="story-eyebrow">ORGANIZAÇÃO QUE CUIDA</p>
+      <h1>Mais tempo para<br />o que importa.</h1>
+      <p>Pacientes, consultas e sua rotina de atendimentos em um só lugar.</p>
+      <div class="story-tags"><span>Gestão de pacientes</span><span>Agenda integrada</span></div>
+    </div>
+    <p class="story-footer">Sua rotina mais simples. Seu cuidado mais presente.</p>
+  </section>
+  <section id="formulario-auth" class="auth-content" tabindex="-1">
+    <div class="auth-card"><ng-content></ng-content></div>
+    <p class="auth-footnote">AgendaCare · Gestão de atendimentos</p>
+  </section>
+</main>
